@@ -21,11 +21,13 @@ import (
 	"time"
 
 	"github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
 
 	"github.com/apisix/manager-api/test/e2enew/base"
 )
 
 func TestRoute(t *testing.T) {
+	gomega.RegisterFailHandler(ginkgo.Fail)
 	ginkgo.RunSpecs(t, "route suite")
 }
 

@@ -105,6 +105,29 @@ func BatchTestServerPort(times int) map[string]int {
 	return res
 }
 
+func HttpPostFile(url string, reqParams map[string]string, files []UploadFile, headers map[string]string) ([]byte, int, error) {
+	requestBody, newContentType, err := GetReader(reqParams, "multipart/form-data", files)
+	mustCheck(err)
+	httpRequest, _ := http.NewRequest("POST", url, requestBody)
+	httpRequest.Header.Add("Content-Type", newContentType)
+	for k, v := range headers {
+		httpRequest.Header.Add(k, v)
+	}
+
+	httpClient := &http.Client{}
+	resp, err := httpClient.Do(httpRequest)
+	mustCheck(err)
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return body, resp.StatusCode, nil
+}
+
 func GetReader(reqParams map[string]string, contentType string, files []UploadFile) (io.Reader, string, error) {
 	if strings.Index(contentType, "json") > -1 {
 		bytesData, _ := json.Marshal(reqParams)
@@ -144,4 +167,10 @@ func GetReader(reqParams map[string]string, contentType string, files []UploadFi
 	reqBody := urlValues.Encode()
 
 	return strings.NewReader(reqBody), contentType, nil
+}
+
+func mustCheck(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
