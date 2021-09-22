@@ -290,3 +290,16 @@ type PluginConfig struct {
 	Plugins map[string]interface{} `json:"plugins"`
 	Labels  map[string]string      `json:"labels,omitempty"`
 }
+
+type ExternalUser struct {
+	Type   string `json:"type"`
+	UserID string `json:"user_id"`
+}
+
+// swagger:model DashboardUser
+type DashboardUser struct {
+	BaseInfo
+	Username  string         `json:"username"`
+	Password  string         `json:"password"`
+	Externals []ExternalUser `json:"externals"`
+}

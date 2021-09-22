@@ -38,6 +38,8 @@ const (
 	HubKeyGlobalRule   HubKey = "global_rule"
 	HubKeyServerInfo   HubKey = "server_info"
 	HubKeyPluginConfig HubKey = "plugin_config"
+
+	HubKeyDashboardUser HubKey = "dashboard/user"
 )
 
 var (
@@ -194,6 +196,18 @@ func InitStores() error {
 		ObjType:  reflect.TypeOf(entity.PluginConfig{}),
 		KeyFunc: func(obj interface{}) string {
 			r := obj.(*entity.PluginConfig)
+			return utils.InterfaceToString(r.ID)
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	err = InitStore(HubKeyDashboardUser, GenericStoreOption{
+		BasePath: "/dashboard/users",
+		ObjType:  reflect.TypeOf(entity.DashboardUser{}),
+		KeyFunc: func(obj interface{}) string {
+			r := obj.(*entity.DashboardUser)
 			return utils.InterfaceToString(r.ID)
 		},
 	})

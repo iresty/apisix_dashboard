@@ -17,6 +17,7 @@
 package authentication
 
 import (
+	"math"
 	"reflect"
 	"time"
 
@@ -25,17 +26,23 @@ import (
 	"github.com/shiningrush/droplet"
 	"github.com/shiningrush/droplet/wrapper"
 	wgin "github.com/shiningrush/droplet/wrapper/gin"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/apisix/manager-api/internal/conf"
+	"github.com/apisix/manager-api/internal/core/entity"
+	"github.com/apisix/manager-api/internal/core/store"
 	"github.com/apisix/manager-api/internal/handler"
 	"github.com/apisix/manager-api/internal/utils/consts"
 )
 
 type Handler struct {
+	dashboardUserStore store.Interface
 }
 
 func NewHandler() (handler.RouteRegister, error) {
-	return &Handler{}, nil
+	return &Handler{
+		dashboardUserStore: store.GetStore(store.HubKeyDashboardUser),
+	}, nil
 }
 
 func (h *Handler) ApplyRoute(r *gin.Engine) {
@@ -87,22 +94,61 @@ func (h *Handler) userLogin(c droplet.Context) (interface{}, error) {
 	username := input.Username
 	password := input.Password
 
-	user := conf.UserList[username]
-	if username != user.Username || password != user.Password {
+	loginSuccess := false
+	switch conf.DataSource {
+	case conf.DataSourceTypeLocal:
+		users := conf.UserList
+		for _, user := range users {
+			if username == user.Username {
+				ok, err := user.Valid(password)
+				if !ok && err != nil {
+					return nil, err
+				}
+
+				loginSuccess = true
+			}
+		}
+	case conf.DataSourceTypeEtcd:
+		ret, err := h.dashboardUserStore.List(c.Context(), store.ListInput{
+			Predicate: func(obj interface{}) bool {
+				return obj.(*entity.DashboardUser).Username == username
+			},
+			Format: func(obj interface{}) interface{} {
+				return obj.(*entity.DashboardUser)
+			},
+			PageSize:   math.MaxInt32,
+			PageNumber: 1,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if ret.TotalSize == 1 {
+			user := ret.Rows[0].(*entity.DashboardUser)
+			err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+			if err == nil {
+				loginSuccess = true
+			}
+		}
+	}
+
+	if loginSuccess {
+		// create JWT for session
+		claims := jwt.StandardClaims{
+			Audience:  string(conf.DataSource),
+			Subject:   username,
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(time.Second * time.Duration(conf.AuthConf.ExpireTime)).Unix(),
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		signedToken, _ := token.SignedString([]byte(conf.AuthConf.Secret))
+
+		// output token
+		return &UserSession{
+			Token: signedToken,
+		}, nil
+	} else {
+		// user not exist
 		return nil, consts.ErrUsernamePassword
 	}
-
-	// create JWT for session
-	claims := jwt.StandardClaims{
-		Subject:   username,
-		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(time.Second * time.Duration(conf.AuthConf.ExpireTime)).Unix(),
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, _ := token.SignedString([]byte(conf.AuthConf.Secret))
-
-	// output token
-	return &UserSession{
-		Token: signedToken,
-	}, nil
 }

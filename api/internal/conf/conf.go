@@ -27,8 +27,6 @@ import (
 
 	"github.com/tidwall/gjson"
 	"gopkg.in/yaml.v2"
-
-	"github.com/apisix/manager-api/internal/utils"
 )
 
 const (
@@ -55,7 +53,6 @@ var (
 	ErrorLogLevel    = "warn"
 	ErrorLogPath     = "logs/error.log"
 	AccessLogPath    = "logs/access.log"
-	UserList         = make(map[string]User, 2)
 	AuthConf         Authentication
 	SSLDefaultStatus = 1 //enable ssl by default
 	ImportSizeLimit  = 10 * 1024 * 1024
@@ -111,17 +108,6 @@ type Conf struct {
 	Log       Log
 	AllowList []string `yaml:"allow_list"`
 	MaxCpu    int      `yaml:"max_cpu"`
-}
-
-type User struct {
-	Username string
-	Password string
-}
-
-type Authentication struct {
-	Secret     string
-	ExpireTime int `yaml:"expire_time"`
-	Users      []User
 }
 
 type Config struct {
@@ -239,19 +225,6 @@ func setEnvironment() {
 	ENV = EnvPROD
 	if env := os.Getenv("ENV"); env != "" {
 		ENV = env
-	}
-}
-
-func initAuthentication(conf Authentication) {
-	AuthConf = conf
-	if AuthConf.Secret == "secret" {
-		AuthConf.Secret = utils.GetFlakeUidStr()
-	}
-
-	userList := conf.Users
-	// create user list
-	for _, item := range userList {
-		UserList[item.Username] = item
 	}
 }
 

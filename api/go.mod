@@ -43,6 +43,7 @@ require (
 	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da
 	go.etcd.io/etcd v3.3.25+incompatible
 	go.uber.org/zap v1.16.0
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
 	gopkg.in/yaml.v2 v2.4.0

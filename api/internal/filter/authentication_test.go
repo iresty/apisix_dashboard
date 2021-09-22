@@ -111,6 +111,6 @@ func TestAuthenticationMiddleware_Handle(t *testing.T) {
 	adminToken := genToken("admin", time.Now().Unix(), time.Now().Unix()+60*3600)
 	fakeReq.Header.Set("Authorization", adminToken)
 	ctx.SetOutput("test data")
-	assert.Equal(t, mw.Handle(ctx), errors.New("next middleware"))
+	assert.Equal(t, errors.New("next middleware"), mw.Handle(ctx))
 	assert.Equal(t, "test data", ctx.Output().(string))
 }

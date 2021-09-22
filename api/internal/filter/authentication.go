@@ -18,6 +18,7 @@ package filter
 
 import (
 	"errors"
+	"math"
 	"net/http"
 	"strings"
 
@@ -27,6 +28,8 @@ import (
 	"github.com/shiningrush/droplet/middleware"
 
 	"github.com/apisix/manager-api/internal/conf"
+	"github.com/apisix/manager-api/internal/core/entity"
+	"github.com/apisix/manager-api/internal/core/store"
 	"github.com/apisix/manager-api/internal/log"
 )
 
@@ -90,7 +93,40 @@ func (mw *AuthenticationMiddleware) Handle(ctx droplet.Context) error {
 		return nil
 	}
 
-	if _, ok := conf.UserList[claims.Subject]; !ok {
+	userExist := false
+	switch conf.DataSourceType(claims.Audience) {
+	case conf.DataSourceTypeEtcd:
+		dashboardUserStore := store.GetStore(store.HubKeyDashboardUser)
+		ret, err := dashboardUserStore.List(ctx.Context(), store.ListInput{
+			Predicate: func(obj interface{}) bool {
+				return claims.Subject == obj.(*entity.DashboardUser).Username
+			},
+			Format: func(obj interface{}) interface{} {
+				return obj.(*entity.DashboardUser)
+			},
+			PageSize:   math.MaxInt32,
+			PageNumber: 1,
+		})
+		if err != nil {
+			log.Warn("user not exist in etcd")
+			ctx.SetOutput(&data.SpecCodeResponse{StatusCode: http.StatusUnauthorized, Response: response})
+			return nil
+		}
+
+		if ret.TotalSize > 0 {
+			userExist = true
+		}
+	case conf.DataSourceTypeLocal:
+		fallthrough
+	default:
+		for _, item := range conf.UserList {
+			if claims.Subject == item.Username {
+				userExist = true
+			}
+		}
+	}
+
+	if !userExist {
 		log.Warnf("user not exists by token claims subject %s", claims.Subject)
 		ctx.SetOutput(&data.SpecCodeResponse{StatusCode: http.StatusUnauthorized, Response: response})
 		return nil

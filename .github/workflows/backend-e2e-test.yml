@@ -194,3 +194,66 @@ jobs:
         working-directory: ./api/test/testdata
         run: |
           bash <(curl -s https://codecov.io/bash) -f ./integrationcover.out -F backend-e2e-test-ginkgo
+
+  backend-e2e-test-authentication:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: setup go
+        uses: actions/setup-go@v2.1.3
+        with:
+          go-version: "1.13"
+
+      - name: Modify conf.yaml Configure for use by the manage-api cluster
+        run: |
+          sed -i 's/127.0.0.1:2379/172.16.238.10:2379/' ./api/conf/conf.yaml
+          sed -i 's@127.0.0.1@0.0.0.0/0@' ./api/conf/conf.yaml
+          sed -i '/172.16.238.10:2379/a\      - 172.16.238.11:2379' ./api/conf/conf.yaml
+          sed -i '/172.16.238.10:2379/a\      - 172.16.238.12:2379' ./api/conf/conf.yaml
+          sed -i 's/data_source: local/data_source: etcd/' ./api/conf/conf.yaml
+
+          # update e2e test username and password
+          sed -i 's/"username": "admin"/"username": "etcd"/' ./api/test/e2enew/base/base.go
+          sed -i 's/"password": "admin"/"password": "etcd"/' ./api/test/e2enew/base/base.go
+
+      - name: download file Dockerfile-apisix
+        working-directory: ./api/test/docker
+        run: |
+          curl -o Dockerfile-apisix https://raw.githubusercontent.com/apache/apisix-docker/master/alpine/Dockerfile
+
+      - name: run docker compose
+        working-directory: ./api/test/docker
+        run: |
+          docker-compose up -d
+          sleep 5
+          docker logs docker_managerapi_1
+
+      - name: Insert etcd dashboard user record
+        run: |
+          curl -L http://localhost:2379/v3/kv/put -X POST -d "{\"key\": \"L2Rhc2hib2FyZC91c2Vycy8wMDAwMDAwMDAwMDAwMDAwMDA=\", \"value\": \"eyJpZCI6IjAwMDAwMDAwMDAwMDAwMDAwMCIsImNyZWF0ZV90aW1lIjoxNjAwMDAwMDAwLCJ1cGRhdGVfdGltZSI6MTYwMDAwMDAwMCwidXNlcm5hbWUiOiJldGNkIiwicGFzc3dvcmQiOiIkMmEkMTAkUDVOQ0R5NEZRUWdmakhaVHJLWXQ5dUVCektCYlRvVE8uWWtweXZuWVNEUTdUTzR0VWI2OHUiLCJleHRlcm5hbHMiOm51bGx9\"}"
+          docker exec docker_node1_1 /bin/sh -c "/usr/local/bin/etcdctl get /dashboard/users/000000000000000000"
+
+      - name: install ginkgo cli
+        run: go get github.com/onsi/ginkgo/ginkgo
+
+      - name: run test
+        working-directory: ./api/test/e2enew
+        run: ginkgo -r
+
+      - name: stop docker compose
+        working-directory: ./api/test/docker
+        run: |
+          docker-compose down
+          sleep 10
+
+      - name: output test coverage
+        working-directory: ./api/test/testdata
+        run: |
+          go tool cover -func=./integrationcover.out
+
+      - name: upload coverage profile
+        working-directory: ./api/test/testdata
+        run: |
+          bash <(curl -s https://codecov.io/bash) -f ./integrationcover.out -F backend-e2e-test-ginkgo
