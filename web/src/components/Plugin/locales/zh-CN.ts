@@ -80,6 +80,8 @@ export default {
     '用户指定的限制并发级别的关键字，可以是客户端 IP 或服务端 IP。例如，可以使用主机名（或服务器区域）作为关键字，以便限制每个主机名的并发性。 否则，我们也可以使用客户端地址作为关键字，这样我们就可以避免单个客户端用太多的并行连接或请求淹没我们的服务。当前接受的 key 有："remote_addr"（客户端 IP 地址）, "server_addr"（服务端 IP 地址）, 请求头中的"X-Forwarded-For" 或 "X-Real-IP", "consumer_name"（consumer 的 username）。',
   'component.pluginForm.limit-conn.rejected_code.tooltip':
     '当请求超过 conn + burst 这个阈值时，返回的 HTTP 状态码。',
+  'component.pluginForm.limit-conn.rejected_msg.tooltip':
+    '当请求超过 conn + burst 时返回的消息将被拒绝。',
   'component.pluginForm.limit-conn.only_use_default_delay.tooltip':
     '延迟时间的严格模式。 如果设置为true的话，将会严格按照设置的时间来进行延迟',
 
@@ -92,6 +94,7 @@ export default {
     '用来做请求计数的依据，当前接受的 key 有："remote_addr"(客户端IP地址), "server_addr"(服务端 IP 地址), 请求头中的"X-Forwarded-For" 或 "X-Real-IP"，"consumer_name"(consumer 的 username).',
   'component.pluginForm.limit-req.rejected_code.tooltip':
     '当请求超过阈值被拒绝时，返回的 HTTP 状态码。',
+  'component.pluginForm.limit-req.rejected_msg.tooltip': '请求超过阈值并被拒绝时返回的消息。',
   'component.pluginForm.limit-req.nodelay.tooltip': '开启后突发的请求不会延迟',
 
   'component.plugin.form': '表单',
@@ -124,4 +127,5 @@ export default {
   'component.pluginForm.limit-count.redis_cluster_name.tooltip':
     '当使用 redis-cluster 限速策略时，该属性是 Redis 集群服务节点的名称。',
   'component.pluginForm.limit-count.atLeast2Characters.rule': '请至少输入 2 个字符',
+  'component.pluginForm.limit-count.rejected_msg.tooltip': '请求超过阈值并被拒绝时返回的消息。',
 };

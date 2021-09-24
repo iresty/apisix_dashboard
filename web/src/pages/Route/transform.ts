@@ -275,8 +275,8 @@ const transformVarsToRules = (
     const regex = new RegExp('^(cookie|http|arg)_.+');
     if (regex.test(key)) {
       [, position, name] = key.split(/^(cookie|http|arg)_/);
-    }else {
-      position = "buildin";
+    } else {
+      position = 'buildin';
       name = key;
     }
     return {

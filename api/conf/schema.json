@@ -3567,6 +3567,16 @@
 						"enum": ["remote_addr", "server_addr"],
 						"type": "string"
 					},
+					"rejected_code": {
+						"default": 503,
+						"maximum": 599,
+						"minimum": 200,
+						"type": "integer"
+					},
+					"rejected_msg": {
+						"minLength": 1,
+						"type": "string"
+					},
 					"only_use_default_delay": {
 						"default": false,
 						"type": "boolean"

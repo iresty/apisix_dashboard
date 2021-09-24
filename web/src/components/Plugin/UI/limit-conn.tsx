@@ -16,7 +16,7 @@
  */
 import React from 'react';
 import type { FormInstance } from 'antd/es/form';
-import { Form, InputNumber, Select, Switch } from 'antd';
+import { Form, Input, InputNumber, Select, Switch } from 'antd';
 import { useIntl } from 'umi';
 
 type Props = {
@@ -95,6 +95,25 @@ const LimitConn: React.FC<Props> = ({ form, schema }) => {
             );
           })}
         </Select>
+      </Form.Item>
+      <Form.Item
+        label="rejected_code"
+        name="rejected_code"
+        initialValue={propertires.rejected_code.default}
+        tooltip={formatMessage({ id: 'component.pluginForm.limit-conn.rejected_code.tooltip' })}
+      >
+        <InputNumber
+          min={propertires.rejected_code.minimum}
+          max={propertires.rejected_code.maximum}
+          required
+        />
+      </Form.Item>
+      <Form.Item
+        label="rejected_msg"
+        name="rejected_msg"
+        tooltip={formatMessage({ id: 'component.pluginForm.limit-conn.rejected_msg.tooltip' })}
+      >
+        <Input />
       </Form.Item>
     </Form>
   );

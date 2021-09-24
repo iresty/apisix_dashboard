@@ -209,7 +209,9 @@ const MatchingRulesView: React.FC<RouteModule.Step1PassProps> = ({
               <Option value="http">{formatMessage({ id: 'page.route.httpRequestHeader' })}</Option>
               <Option value="arg">{formatMessage({ id: 'page.route.requestParameter' })}</Option>
               <Option value="cookie">Cookie</Option>
-              <Option value="buildin">{formatMessage({ id: 'page.route.buildinParameter' })}</Option>
+              <Option value="buildin">
+                {formatMessage({ id: 'page.route.buildinParameter' })}
+              </Option>
             </Select>
           </Form.Item>
           <Form.Item
