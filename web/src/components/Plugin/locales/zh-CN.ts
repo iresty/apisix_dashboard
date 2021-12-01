@@ -133,4 +133,9 @@ export default {
   'component.pluginForm.limit-count.redis_cluster_name.tooltip':
     '当使用 redis-cluster 限速策略时，该属性是 Redis 集群服务节点的名称。',
   'component.pluginForm.limit-count.atLeast2Characters.rule': '请至少输入 2 个字符',
+
+    // request-id
+    'component.pluginForm.request-id.header_name.tooltip': 'request ID 的请求头名称',
+    'component.pluginForm.request-id.include_in_response.tooltip':
+      '响应头中包含 request ID 选项',
 };

@@ -141,4 +141,9 @@ export default {
   'component.pluginForm.limit-count.redis_cluster_name.tooltip':
     'When using redis-cluster policy, this property is the name of Redis cluster service nodes.',
   'component.pluginForm.limit-count.atLeast2Characters.rule': 'Please enter at least 2 characters',
+
+  // request-id
+  'component.pluginForm.request-id.header_name.tooltip': 'Request ID header name',
+  'component.pluginForm.request-id.include_in_response.tooltip':
+    'Option to include the unique request ID in the response header',
 };
