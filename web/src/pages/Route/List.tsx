@@ -36,7 +36,13 @@ import {
   Tooltip,
 } from 'antd';
 import { history, useIntl } from 'umi';
-import { PlusOutlined, ExportOutlined, ImportOutlined, DownOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  BugOutlined,
+  ExportOutlined,
+  ImportOutlined,
+  DownOutlined,
+} from '@ant-design/icons';
 import { js_beautify } from 'js-beautify';
 import yaml from 'js-yaml';
 import moment from 'moment';
@@ -208,6 +214,13 @@ const Page: React.FC = () => {
           setShowImportModal(true);
         },
       },
+      {
+        name: formatMessage({ id: 'page.route.onlineDebug' }),
+        icon: <BugOutlined />,
+        onClick: () => {
+          setDebugDrawVisible(true);
+        },
+      },
     ];
 
     return (
@@ -274,6 +287,14 @@ const Page: React.FC = () => {
               });
             },
           });
+        },
+      },
+      {
+        name: formatMessage({ id: 'component.global.debug' }),
+        onClick: () => {
+          setId(record.id);
+          setRawData(record);
+          setDebugDrawVisible(true);
         },
       },
     ];
@@ -595,6 +616,7 @@ const Page: React.FC = () => {
       />
       <DebugDrawView
         visible={debugDrawVisible}
+        data={rawData}
         onClose={() => {
           setDebugDrawVisible(false);
         }}

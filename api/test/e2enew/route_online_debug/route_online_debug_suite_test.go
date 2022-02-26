@@ -28,7 +28,7 @@ import (
 
 func TestRoute(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
-	//ginkgo.RunSpecs(t, "route online debug suite")
+	ginkgo.RunSpecs(t, "route online debug suite")
 }
 
 var _ = ginkgo.AfterSuite(func() {

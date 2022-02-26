@@ -21,10 +21,13 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"github.com/apisix/manager-api/internal/core/entity"
+	"github.com/apisix/manager-api/internal/core/store"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -38,10 +41,17 @@ import (
 )
 
 type Handler struct {
+	routeStore    store.Interface
+	svcStore      store.Interface
+	upstreamStore store.Interface
 }
 
 func NewHandler() (handler.RouteRegister, error) {
-	return &Handler{}, nil
+	return &Handler{
+		routeStore:    store.GetStore(store.HubKeyRoute),
+		svcStore:      store.GetStore(store.HubKeyService),
+		upstreamStore: store.GetStore(store.HubKeyUpstream),
+	}, nil
 }
 
 type ProtocolSupport interface {
@@ -54,7 +64,8 @@ func (h *Handler) ApplyRoute(r *gin.Engine) {
 }
 
 type DebugOnlineInput struct {
-	URL             string `auto_read:"online_debug_url,header"`
+	ID              string `auto_read:"online_debug_route_id,header"`
+	RequestPath     string `auto_read:"online_debug_path,header"`
 	RequestProtocol string `auto_read:"online_debug_request_protocol,header"`
 	Method          string `auto_read:"online_debug_method,header"`
 	HeaderParams    string `auto_read:"online_debug_header_params,header"`
@@ -78,8 +89,8 @@ func (h *Handler) DebugRequestForwarding(c droplet.Context) (interface{}, error)
 	}
 
 	protocolMap := make(map[string]ProtocolSupport)
-	protocolMap["http"] = &HTTPProtocolSupport{}
-	protocolMap["https"] = &HTTPProtocolSupport{}
+	protocolMap["http"] = &HTTPProtocolSupport{handler: h}
+	protocolMap["https"] = &HTTPProtocolSupport{handler: h}
 
 	if v, ok := protocolMap[protocol]; ok {
 		ret, err := v.RequestForwarding(c)
@@ -90,14 +101,46 @@ func (h *Handler) DebugRequestForwarding(c droplet.Context) (interface{}, error)
 }
 
 type HTTPProtocolSupport struct {
+	handler *Handler
 }
 
 func (h *HTTPProtocolSupport) RequestForwarding(c droplet.Context) (interface{}, error) {
 	input := c.Input().(*DebugOnlineInput)
-	url := input.URL
+	requestPath := input.RequestPath
 	method := input.Method
 	body := input.Body
 	contentType := input.ContentType
+	var upstreamAddress string
+
+	r, err := h.handler.routeStore.Get(c.Context(), input.ID)
+	if err != nil {
+		return nil, err
+	}
+	route := r.(*entity.Route)
+
+	host := route.Host
+
+	if route.Plugins != nil {
+		if uri, ok := route.Plugins["proxy-rewrite"].(map[string]interface{})["uri"]; ok {
+			requestPath = uri.(string)
+		}
+		if rewriteHost, ok := route.Plugins["proxy-rewrite"].(map[string]interface{})["host"]; ok {
+			host = rewriteHost.(string)
+		}
+	}
+
+	if route.Upstream != nil {
+		upstreamAddress = route.Upstream.Nodes.([]*entity.Node)[0].Host + ":" + strconv.Itoa(route.Upstream.Nodes.([]*entity.Node)[0].Port)
+	} else if route.UpstreamID != nil {
+		up, err := h.handler.upstreamStore.Get(c.Context(), route.UpstreamID.(string))
+		if err != nil {
+			return nil, err
+		}
+		upstream := up.(*entity.Upstream)
+		upstreamAddress = upstream.UpstreamDef.Nodes.([]*entity.Node)[0].Host + ":" + strconv.Itoa(upstream.UpstreamDef.Nodes.([]*entity.Node)[0].Port)
+	}
+
+	url := input.RequestProtocol + "://" + upstreamAddress + requestPath
 
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	transport.DisableCompression = true
@@ -108,7 +151,7 @@ func (h *HTTPProtocolSupport) RequestForwarding(c droplet.Context) (interface{},
 	}
 
 	var tempMap map[string][]string
-	err := json.Unmarshal([]byte(input.HeaderParams), &tempMap)
+	err = json.Unmarshal([]byte(input.HeaderParams), &tempMap)
 
 	if err != nil {
 		return &data.SpecCodeResponse{StatusCode: http.StatusBadRequest}, fmt.Errorf("can not get header")
@@ -128,6 +171,12 @@ func (h *HTTPProtocolSupport) RequestForwarding(c droplet.Context) (interface{},
 				req.Header.Set(k, v1)
 			}
 		}
+	}
+
+	if req.Header.Get("Host") != "" {
+		req.Header.Set("Host", host)
+	} else {
+		req.Header.Add("Host", host)
 	}
 
 	resp, err := client.Do(req)

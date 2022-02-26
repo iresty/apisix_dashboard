@@ -15,16 +15,24 @@
  * limitations under the License.
  */
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Drawer, Form, Input, notification, Radio, Select, Spin, Tabs } from 'antd';
+import {
+  Button,
+  Card,
+  Divider,
+  Drawer,
+  Form,
+  Input,
+  notification,
+  Radio,
+  Select,
+  Spin,
+  Tabs,
+} from 'antd';
 import { useIntl } from 'umi';
 import queryString from 'query-string';
 import Base64 from 'base-64';
-import urlRegexSafe from 'url-regex-safe';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined } from '@ant-design/icons';
-import type * as monacoEditor from 'monaco-editor';
-import type { Monaco } from '@monaco-editor/react';
-import Editor from '@monaco-editor/react';
 
 import PanelSection from '@/components/PanelSection';
 
@@ -41,15 +49,23 @@ import {
 import { AuthenticationView, DebugFormDataView, DebugParamsView } from '.';
 import { debugRoute } from '../../service';
 import styles from './index.less';
+import type { Monaco } from '@monaco-editor/react';
+import Editor from '@monaco-editor/react';
 
 const { Option } = Select;
-const { Search } = Input;
 const { TabPane } = Tabs;
 
 const DebugDrawView: React.FC<RouteModule.DebugDrawProps> = (props) => {
   const { formatMessage } = useIntl();
-  const [httpMethod, setHttpMethod] = useState(HTTP_METHOD_OPTION_LIST[0]);
+  const [httpMethod, setHttpMethod] = useState(
+    props.data.method !== undefined && props.data.method.length !== 0
+      ? props.data.methods[0]
+      : HTTP_METHOD_OPTION_LIST[0],
+  );
   const [requestProtocol, setRequestProtocol] = useState(PROTOCOL_SUPPORTED[0]);
+  const [pathWildcardRewriteVisible, setPathWildcardRewriteVisible] = useState(false);
+  const [pathWildcardRewrite, setPathWildcardRewrite] = useState('');
+  const [pathWildcardRewritePrefix, setPathWildcardRewritePrefix] = useState('');
   const [showBodyTab, setShowBodyTab] = useState(false);
   const [queryForm] = Form.useForm();
   const [urlencodedForm] = Form.useForm();
@@ -215,13 +231,6 @@ const DebugDrawView: React.FC<RouteModule.DebugDrawProps> = (props) => {
   };
 
   const handleDebug = (url: string) => {
-    /* eslint-disable no-useless-escape */
-    if (!urlRegexSafe({ exact: true, strict: false }).test(url)) {
-      notification.warning({
-        message: formatMessage({ id: 'page.route.input.placeholder.requestUrl' }),
-      });
-      return;
-    }
     const queryFormData = transformHeaderAndQueryParamsFormData(queryForm.getFieldsValue().params);
     const bodyFormRelateData = transformBodyParamsFormData();
     const { bodyFormData, header: bodyFormHeader } = bodyFormRelateData;
@@ -242,8 +251,9 @@ const DebugDrawView: React.FC<RouteModule.DebugDrawProps> = (props) => {
     // TODO: grpc and websocket
     debugRoute(
       {
+        online_debug_route_id: props.data.id,
         online_debug_header_params: JSON.stringify(headerFormData),
-        online_debug_url: `${requestProtocol}://${url}${urlQueryString}`,
+        online_debug_path: `${url}${urlQueryString}`,
         online_debug_request_protocol: requestProtocol,
         online_debug_method: httpMethod,
       },
@@ -289,73 +299,118 @@ const DebugDrawView: React.FC<RouteModule.DebugDrawProps> = (props) => {
   return (
     <Drawer
       title={formatMessage({ id: 'page.route.onlineDebug' })}
-      mask={false}
-      maskClosable={false}
       visible={props.visible}
       width={650}
       onClose={() => {
         props.onClose();
+        setPathWildcardRewriteVisible(false);
+        setPathWildcardRewrite('');
+        setResponse(null);
+        queryForm.setFieldsValue(DEFAULT_DEBUG_PARAM_FORM_DATA);
+        urlencodedForm.setFieldsValue(DEFAULT_DEBUG_PARAM_FORM_DATA);
+        formDataForm.setFieldsValue(DEFAULT_DEBUG_PARAM_FORM_DATA);
+        headerForm.setFieldsValue(DEFAULT_DEBUG_PARAM_FORM_DATA);
+        authForm.setFieldsValue(DEFAULT_DEBUG_AUTH_FORM_DATA);
       }}
       className={styles.routeDebugDraw}
       data-cy="debug-draw"
+      destroyOnClose={true}
     >
       <Card bordered={false}>
-        <Input.Group compact>
-          <Select
-            defaultValue={httpMethod}
-            style={{ width: '20%' }}
-            onChange={(value) => {
-              setHttpMethod(value);
-              setShowBodyTab(!(methodWithoutBody.indexOf(value) > -1));
-            }}
-            size="large"
-            data-cy="debug-method"
-          >
-            {HTTP_METHOD_OPTION_LIST.map((method) => {
-              return (
-                <Option key={method} value={method}>
-                  {method}
-                </Option>
-              );
-            })}
-          </Select>
-          <Select
-            defaultValue={requestProtocol}
-            style={{ width: '18%' }}
-            onChange={(value) => {
-              setRequestProtocol(value);
-            }}
-            size="large"
-            data-cy="debug-protocol"
-          >
-            {PROTOCOL_SUPPORTED.map((protocol) => {
-              return (
-                <Option key={protocol} value={protocol}>
-                  {`${protocol}://`}
-                </Option>
-              );
-            })}
-          </Select>
-          <Search
-            id="debugUri"
-            placeholder={formatMessage({ id: 'page.route.input.placeholder.requestUrl' })}
-            allowClear
-            enterButton={formatMessage({ id: 'page.route.button.send' })}
-            size="large"
-            style={{ width: '62%' }}
-            onSearch={handleDebug}
-            onPressEnter={(e) => {
-              handleDebug(e.currentTarget.value);
-            }}
-            onChange={(e) => {
-              if (e.currentTarget.value === '') {
-                resetForms();
+        <PanelSection title={formatMessage({ id: 'page.route.PanelSection.title.requestLine' })}>
+          <Input.Group compact>
+            <Select
+              placeholder={formatMessage({ id: 'page.route.Select.method' })}
+              style={{ width: '20%' }}
+              onChange={(value) => {
+                setHttpMethod(value);
+                setShowBodyTab(!(methodWithoutBody.indexOf(value) > -1));
+              }}
+              size="large"
+              data-cy="debug-method"
+            >
+              {HTTP_METHOD_OPTION_LIST.map((method) => {
+                return (
+                  <Option
+                    key={method}
+                    value={method}
+                    disabled={
+                      props.data.methods !== undefined && !props.data.methods.includes(method)
+                    }
+                  >
+                    {method}
+                  </Option>
+                );
+              })}
+            </Select>
+            <Select
+              placeholder={formatMessage({ id: 'page.route.Select.protocol' })}
+              style={{ width: '20%' }}
+              onChange={(value) => {
+                setRequestProtocol(value);
+              }}
+              size="large"
+              data-cy="debug-protocol"
+            >
+              {PROTOCOL_SUPPORTED.map((protocol) => {
+                return (
+                  <Option key={protocol} value={protocol}>
+                    {`${protocol}://`}
+                  </Option>
+                );
+              })}
+            </Select>
+            <Select
+              placeholder={formatMessage({ id: 'page.route.Select.requestPath' })}
+              style={{ width: '60%' }}
+              onChange={(value: string) => {
+                if (value.endsWith('*')) {
+                  setPathWildcardRewrite('');
+                  setPathWildcardRewriteVisible(true);
+                  setPathWildcardRewritePrefix(value.slice(0, value.length - 1));
+                } else {
+                  setPathWildcardRewriteVisible(false);
+                  setPathWildcardRewritePrefix(value);
+                  setPathWildcardRewrite('');
+                }
+              }}
+              size="large"
+              data-cy="debug-path"
+              options={
+                props.data.uris
+                  ? props.data.uris.map((path: string) => {
+                      return {
+                        label: path,
+                        value: path,
+                      };
+                    })
+                  : [
+                      {
+                        label: props.data.uri,
+                        value: props.data.uri,
+                      },
+                    ]
               }
-            }}
-          />
-        </Input.Group>
+            />
+            <Divider
+              orientation="left"
+              style={{ display: pathWildcardRewriteVisible ? 'flex' : 'none' }}
+            >
+              {formatMessage({ id: 'page.route.Model.inputPath' })}
+            </Divider>
+            <Input
+              size="large"
+              style={{ display: pathWildcardRewriteVisible ? 'flex' : 'none' }}
+              addonBefore={pathWildcardRewritePrefix}
+              onInput={(e) => {
+                setPathWildcardRewrite(e.target.value);
+              }}
+            />
+          </Input.Group>
+        </PanelSection>
         <PanelSection
           title={formatMessage({ id: 'page.route.PanelSection.title.defineRequestParams' })}
+          style={{ textAlign: 'left' }}
         >
           <Tabs>
             <TabPane
@@ -458,6 +513,16 @@ const DebugDrawView: React.FC<RouteModule.DebugDrawProps> = (props) => {
             )}
           </Tabs>
         </PanelSection>
+        <Divider></Divider>
+        <Button
+          type="primary"
+          size="large"
+          onClick={() => {
+            handleDebug(pathWildcardRewritePrefix + pathWildcardRewrite);
+          }}
+        >
+          {formatMessage({ id: 'page.route.button.send' })}
+        </Button>
         <PanelSection title={formatMessage({ id: 'page.route.PanelSection.title.responseResult' })}>
           <Spin tip="Loading..." spinning={loading}>
             <Tabs

@@ -49,6 +49,34 @@ The Route module aims to control routes by UI instead of calling APIs.
 
 ![route-create-done-list-en](https://user-images.githubusercontent.com/40708551/112923280-a0a94080-912b-11eb-8b83-3960778ecf8a.png)
 
+### Online debug
+
+We can debug a route both published or offline with the online debug function, which is located in the routes list page.
+
+1. Debug a published route
+
+![route-debug-published](../../assets/images/route-debug-published.png)
+
+2. Debug a offline route
+
+![route-debug-offline](https://user-images.githubusercontent.com/40708551/112923419-e5cd7280-912b-11eb-8e7e-57c3c4fe31ef.png)
+
+3. Debug a published route with query params
+
+![route-debug-query-params](../../assets/images/route-debug-query-params.png)
+
+4. Debug a published route with header params
+
+![route-debug-header-params](../../assets/images/route-debug-header-params.png)
+
+5. Debug a published route with body params
+
+![route-debug-body-params](../../assets/images/route-debug-body-params.png)
+
+6. Debug a published route with basic auth
+
+![route-debug-basic-auth](../../assets/images/route-debug-basic-auth.png)
+
 ## Setting
 
 ![setting](https://user-images.githubusercontent.com/40708551/112923561-22996980-912c-11eb-926f-45177500eb65.png)

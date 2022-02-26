@@ -110,8 +110,13 @@ export default {
   'page.route.panelSection.title.requestOverride': '请求改写',
   'page.route.panelSection.title.requestConfigBasicDefine': '匹配条件',
   'page.route.panelSection.title.advancedMatchRule': '高级匹配条件',
+  'page.route.PanelSection.title.requestLine': '请求行定义',
   'page.route.PanelSection.title.defineRequestParams': '请求参数定义',
   'page.route.PanelSection.title.responseResult': '请求响应结果',
+  'page.route.Model.inputPath': '请重写通配符*的路径',
+  'page.route.Select.method': '请求方法',
+  'page.route.Select.protocol': '协议',
+  'page.route.Select.requestPath': '选择请求路径',
 
   'page.route.httpAction': '行为',
   'page.route.httpOverrideOrCreate': '重写/创建',
