@@ -91,7 +91,7 @@ For `web`:
 ### Download {#source-download}
 
 ```shell
-git clone -b release/2.10.1 https://github.com/apache/apisix-dashboard.git && cd apisix-dashboard
+git clone -b release/2.11 https://github.com/apache/apisix-dashboard.git && cd apisix-dashboard
 ```
 
 ### Build {#source-build}
