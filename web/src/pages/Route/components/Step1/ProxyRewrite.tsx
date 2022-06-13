@@ -101,14 +101,6 @@ const ProxyRewrite: React.FC<RouteModule.Step1PassProps> = ({ form, disabled }) 
                         label={formatMessage({ id: 'page.route.form.itemLabel.template' })}
                         name={field.name}
                         key={field.name}
-                        rules={[
-                          {
-                            required: true,
-                            message: `${formatMessage({
-                              id: 'component.global.pleaseEnter',
-                            })} ${formatMessage({ id: 'page.route.form.itemLabel.template' })}`,
-                          },
-                        ]}
                       >
                         <Input
                           placeholder={`${formatMessage({

@@ -102,6 +102,28 @@ var _ = ginkgo.Describe("route with plugin proxy rewrite", func() {
 			ExpectBody:   "x-api-version: v2",
 			Sleep:        base.SleepTime,
 		}),
+		table.Entry("update route using empty regex_uri", base.HttpTestCase{
+        	Object: base.ManagerApiExpect(),
+        	Method: http.MethodPut,
+        	Path:   "/apisix/admin/routes/r1",
+        	Body: `{
+        		"name": "route1",
+        		"uri": "/test",
+        		"plugins": {
+        			"proxy-rewrite": {
+        				"regex_uri": ["/test", ""]
+        			}
+        		},
+        		"upstream": {
+        			"type": "roundrobin",
+        			"nodes": {
+        				"` + base.UpstreamIp + `:1982": 1
+        			}
+        		}
+        	}`,
+        	Headers:      map[string]string{"Authorization": base.GetToken()},
+        	ExpectStatus: http.StatusOK,
+        }),
 		table.Entry("update route using regex_uri", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
