@@ -199,7 +199,7 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 			ExpectBody: []string{`"code":0`, `"username":"consumer_1"`,
-				`"jwt-auth":{"exp":86400,"key":"user-key","secret":"my-secret-key"}`},
+				`"jwt-auth":{"algorithm":"HS256","exp":86400,"key":"user-key","secret":"my-secret-key"}`},
 		}),
 		table.Entry("get the consumer", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),

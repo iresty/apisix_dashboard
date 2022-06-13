@@ -17,6 +17,8 @@
 package consumer
 
 import (
+	"encoding/base64"
+	"math/rand"
 	"reflect"
 	"strings"
 	"time"
@@ -174,6 +176,12 @@ func ensurePluginsDefValue(plugins map[string]interface{}) {
 		if ok && jwtAuth["exp"] == nil {
 			jwtAuth["exp"] = 86400
 		}
+		if ok && jwtAuth["algorithm"] == nil {
+			jwtAuth["algorithm"] = "HS256"
+		}
+		if ok && jwtAuth["secret"] == nil {
+			jwtAuth["secret"] = creatSecret(32)
+		}
 	}
 }
 
@@ -189,4 +197,16 @@ func (h *Handler) BatchDelete(c droplet.Context) (interface{}, error) {
 	}
 
 	return nil, nil
+}
+
+var letterRunes = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func creatSecret(n int) string {
+	arr := make([]byte, n)
+	length := len(letterRunes)
+	rand.Seed(time.Now().Unix())
+	for i := range arr {
+		arr[i] = letterRunes[rand.Intn(length)]
+	}
+	return base64.StdEncoding.EncodeToString(arr)
 }
