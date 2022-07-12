@@ -63,7 +63,6 @@ func NewRootCommand() *cobra.Command {
 	}
 
 	cmd.PersistentFlags().StringVarP(&conf.ConfigFile, "config", "c", "", "config file")
-	cmd.PersistentFlags().StringVarP(&conf.WorkDir, "work-dir", "p", ".", "current work directory")
 
 	cmd.AddCommand(
 		newVersionCommand(),

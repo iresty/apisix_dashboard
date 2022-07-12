@@ -44,7 +44,6 @@ const (
 var (
 	ENV              string
 	Schema           gjson.Result
-	WorkDir          = "."
 	ConfigFile       = ""
 	ServerHost       = "0.0.0.0"
 	ServerPort       = 80
@@ -150,13 +149,8 @@ func init() {
 }
 
 func InitConf() {
-	//go test
-	if workDir := os.Getenv("APISIX_API_WORKDIR"); workDir != "" {
-		WorkDir = workDir
-	}
-
-	setupConfig()
 	setupEnv()
+	setupConfig()
 	initSchema()
 }
 
@@ -169,7 +163,12 @@ func setupConfig() {
 		}
 		viper.SetConfigName(ConfigFile)
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath(WorkDir + "/conf")
+		viper.AddConfigPath("./conf")
+
+		if ENV == EnvTEST {
+			// Add a profile lookup compatibility for GitHub Action CI test
+			viper.AddConfigPath("/home/runner/work/apisix-dashboard/apisix-dashboard/api/conf")
+		}
 	} else {
 		viper.SetConfigFile(ConfigFile)
 	}
@@ -227,7 +226,7 @@ func setupConfig() {
 		if strings.HasPrefix(ErrorLogPath, "winfile") {
 			return
 		}
-		ErrorLogPath, err = filepath.Abs(filepath.Join(WorkDir, ErrorLogPath))
+		ErrorLogPath, err = filepath.Abs(filepath.Join(".", ErrorLogPath))
 		if err != nil {
 			panic(err)
 		}
@@ -239,7 +238,7 @@ func setupConfig() {
 		if strings.HasPrefix(AccessLogPath, "winfile") {
 			return
 		}
-		AccessLogPath, err = filepath.Abs(filepath.Join(WorkDir, AccessLogPath))
+		AccessLogPath, err = filepath.Abs(filepath.Join(".", AccessLogPath))
 		if err != nil {
 			panic(err)
 		}
@@ -291,8 +290,8 @@ func initPlugins(plugins []string) {
 
 func initSchema() {
 	var (
-		apisixSchemaPath       = WorkDir + "/conf/schema.json"
-		customizeSchemaPath    = WorkDir + "/conf/customize_schema.json"
+		apisixSchemaPath       = "./conf/schema.json"
+		customizeSchemaPath    = "./conf/customize_schema.json"
 		apisixSchemaContent    []byte
 		customizeSchemaContent []byte
 		err                    error
