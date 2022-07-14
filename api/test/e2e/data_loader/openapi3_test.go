@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
@@ -310,6 +311,9 @@ var _ = Describe("OpenAPI 3", func() {
 				Headers:      map[string]string{"Authorization": base.GetToken()},
 				ExpectStatus: http.StatusOK,
 			})
+		}),
+		Entry("Wait for APISIX re-sync", func() {
+			time.Sleep(5 * time.Second)
 		}),
 		Entry("Request API", func() {
 			req := base.APISIXExpect().GET("/get")

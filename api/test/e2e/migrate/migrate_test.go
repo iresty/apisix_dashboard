@@ -274,6 +274,10 @@ var _ = Describe("Migrate", func() {
 		Expect(rsp.Code).Should(Equal(0))
 	})
 
+	It("Wait for APISIX re-sync", func() {
+		time.Sleep(5 * time.Second)
+	})
+
 	It("request hit route r1", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
