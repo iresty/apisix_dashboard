@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/apisix/manager-api/internal/conf"
 	"github.com/apisix/manager-api/internal/log"
@@ -38,7 +38,7 @@ func Authentication() gin.HandlerFunc {
 
 		tokenStr := c.GetHeader("Authorization")
 		// verify token
-		token, err := jwt.ParseWithClaims(tokenStr, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(tokenStr, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 			return []byte(conf.AuthConf.Secret), nil
 		})
 
@@ -53,7 +53,7 @@ func Authentication() gin.HandlerFunc {
 			return
 		}
 
-		claims, ok := token.Claims.(*jwt.StandardClaims)
+		claims, ok := token.Claims.(*jwt.RegisteredClaims)
 		if !ok {
 			log.Warnf("token validate failed: %s, %v", err, token.Valid)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, errResp)

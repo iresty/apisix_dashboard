@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/shiningrush/droplet"
 	"github.com/shiningrush/droplet/wrapper"
 	wgin "github.com/shiningrush/droplet/wrapper/gin"
@@ -93,10 +93,10 @@ func (h *Handler) userLogin(c droplet.Context) (interface{}, error) {
 	}
 
 	// create JWT for session
-	claims := jwt.StandardClaims{
+	claims := jwt.RegisteredClaims{
 		Subject:   username,
-		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(time.Second * time.Duration(conf.AuthConf.ExpireTime)).Unix(),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Second * time.Duration(conf.AuthConf.ExpireTime))),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, _ := token.SignedString([]byte(conf.AuthConf.Secret))

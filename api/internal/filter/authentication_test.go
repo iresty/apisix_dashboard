@@ -22,17 +22,17 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/apisix/manager-api/internal/conf"
 )
 
-func genToken(username string, issueAt, expireAt int64) string {
-	claims := jwt.StandardClaims{
+func genToken(username string, issueAt time.Time, expireAt int64) string {
+	claims := jwt.RegisteredClaims{
 		Subject:   username,
-		IssuedAt:  issueAt,
-		ExpiresAt: expireAt,
+		IssuedAt:  jwt.NewNumericDate(issueAt),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Second * time.Duration(expireAt))),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, _ := token.SignedString([]byte(conf.AuthConf.Secret))
@@ -53,22 +53,22 @@ func TestAuthenticationMiddleware_Handle(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
 	// test with token expire
-	expireToken := genToken("admin", time.Now().Unix(), time.Now().Unix()-60*3600)
+	expireToken := genToken("admin", time.Now(), -60*3600)
 	w = performRequest(r, "GET", "/apisix/admin/routes", map[string]string{"Authorization": expireToken})
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
 	// test with empty subject
-	emptySubjectToken := genToken("", time.Now().Unix(), time.Now().Unix()+60*3600)
+	emptySubjectToken := genToken("", time.Now(), 60*3600)
 	w = performRequest(r, "GET", "/apisix/admin/routes", map[string]string{"Authorization": emptySubjectToken})
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
 	// test token with nonexistent username
-	nonexistentUserToken := genToken("user1", time.Now().Unix(), time.Now().Unix()+60*3600)
+	nonexistentUserToken := genToken("user1", time.Now(), 60*3600)
 	w = performRequest(r, "GET", "/apisix/admin/routes", map[string]string{"Authorization": nonexistentUserToken})
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
 	// test auth success
-	validToken := genToken("admin", time.Now().Unix(), time.Now().Unix()+60*3600)
+	validToken := genToken("admin", time.Now(), 60*3600)
 	w = performRequest(r, "GET", "/apisix/admin/routes", map[string]string{"Authorization": validToken})
 	assert.Equal(t, http.StatusOK, w.Code)
 }

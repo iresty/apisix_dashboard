@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        etcd: [3.4.14]
+        etcd: [3.4.13]
     services:
       etcd:
         image: bitnami/etcd:${{ matrix.etcd }}

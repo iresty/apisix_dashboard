@@ -75,7 +75,7 @@ Before using source codes to build, make sure that the following dependencies ar
 
 For `manager-api`:
 
-1. [Golang](https://golang.org/dl/) 1.13+
+1. [Golang](https://golang.org/dl/) 1.15+
 
 > Tip: For users in mainland China, you can use the following command to speed up the module downloads.
 
