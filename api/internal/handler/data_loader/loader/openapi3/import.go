@@ -25,9 +25,9 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/pkg/errors"
 
-	"github.com/apisix/manager-api/internal/core/entity"
-	"github.com/apisix/manager-api/internal/handler/data_loader/loader"
-	"github.com/apisix/manager-api/internal/utils/consts"
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/handler/data_loader/loader"
+	"github.com/apache/apisix-dashboard/api/internal/utils/consts"
 )
 
 func (o Loader) Import(input interface{}) (*loader.DataSets, error) {

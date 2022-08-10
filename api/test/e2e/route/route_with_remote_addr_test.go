@@ -14,23 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package route
+package route_test
 
 import (
 	"net/http"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
-	table.DescribeTable("test route with valid remote_addr remote_addrs",
+var _ = Describe("route with valid remote_addr remote_addrs", func() {
+	DescribeTable("test route with valid remote_addr remote_addrs",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("add route with valid remote_addr", base.HttpTestCase{
+		Entry("add route with valid remote_addr", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -48,7 +48,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route", base.HttpTestCase{
+		Entry("verify route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -57,7 +57,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("update route with valid remote_addr (CIDR)", base.HttpTestCase{
+		Entry("update route with valid remote_addr (CIDR)", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -75,7 +75,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route", base.HttpTestCase{
+		Entry("verify route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -84,7 +84,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("update route with valid remote_addrs", base.HttpTestCase{
+		Entry("update route with valid remote_addrs", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -102,7 +102,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route", base.HttpTestCase{
+		Entry("verify route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -111,7 +111,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("update remote_addr to not be hit", base.HttpTestCase{
+		Entry("update remote_addr to not be hit", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -129,7 +129,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route not found", base.HttpTestCase{
+		Entry("verify route not found", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -138,7 +138,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			ExpectBody:   `{"error_msg":"404 Route Not Found"}`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("update remote_addrs to not be hit", base.HttpTestCase{
+		Entry("update remote_addrs to not be hit", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -156,7 +156,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route not found", base.HttpTestCase{
+		Entry("verify route not found", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -165,7 +165,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			ExpectBody:   `{"error_msg":"404 Route Not Found"}`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("delete route", base.HttpTestCase{
+		Entry("delete route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
@@ -173,7 +173,7 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 			ExpectStatus: http.StatusOK,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify it again after deleting the route", base.HttpTestCase{
+		Entry("verify it again after deleting the route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -185,12 +185,12 @@ var _ = ginkgo.Describe("route with valid remote_addr remote_addrs", func() {
 	)
 })
 
-var _ = ginkgo.Describe("route with invalid remote_addr", func() {
-	table.DescribeTable("route with remote_addr",
+var _ = Describe("route with invalid remote_addr", func() {
+	DescribeTable("route with remote_addr",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("config route with invalid remote_addr", base.HttpTestCase{
+		Entry("config route with invalid remote_addr", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -211,7 +211,7 @@ var _ = ginkgo.Describe("route with invalid remote_addr", func() {
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   "{\"code\":10000,\"message\":\"schema validate failed: remote_addr: Must validate at least one schema (anyOf)\\nremote_addr: Does not match format 'ipv4'\"}",
 		}),
-		table.Entry("verify route", base.HttpTestCase{
+		Entry("verify route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -219,7 +219,7 @@ var _ = ginkgo.Describe("route with invalid remote_addr", func() {
 			ExpectStatus: http.StatusNotFound,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("config route with invalid remote_addr", base.HttpTestCase{
+		Entry("config route with invalid remote_addr", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -240,7 +240,7 @@ var _ = ginkgo.Describe("route with invalid remote_addr", func() {
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   "{\"code\":10000,\"message\":\"schema validate failed: remote_addr: Must validate at least one schema (anyOf)\\nremote_addr: Does not match format 'ipv4'\"}",
 		}),
-		table.Entry("verify route", base.HttpTestCase{
+		Entry("verify route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -248,7 +248,7 @@ var _ = ginkgo.Describe("route with invalid remote_addr", func() {
 			ExpectStatus: http.StatusNotFound,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("config route with invalid remote_addrs", base.HttpTestCase{
+		Entry("config route with invalid remote_addrs", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -269,7 +269,7 @@ var _ = ginkgo.Describe("route with invalid remote_addr", func() {
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   "{\"code\":10000,\"message\":\"schema validate failed: remote_addrs.1: Must validate at least one schema (anyOf)\\nremote_addrs.1: Does not match format 'ipv4'\"}",
 		}),
-		table.Entry("verify route", base.HttpTestCase{
+		Entry("verify route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",

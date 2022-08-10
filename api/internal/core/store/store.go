@@ -27,13 +27,16 @@ import (
 	"sync"
 	"time"
 
+	"github.com/apache/apisix-dashboard/api/internal/core/storage"
+
 	"github.com/shiningrush/droplet/data"
 
-	"github.com/apisix/manager-api/internal/core/entity"
-	"github.com/apisix/manager-api/internal/core/storage"
-	"github.com/apisix/manager-api/internal/log"
-	"github.com/apisix/manager-api/internal/utils"
-	"github.com/apisix/manager-api/internal/utils/runtime"
+	"github.com/apache/apisix-dashboard/api/pkg/storage"
+
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/utils/runtime"
 )
 
 type Pagination struct {
@@ -51,7 +54,7 @@ type Interface interface {
 }
 
 type GenericStore struct {
-	Stg storage.Interface
+	Stg storage_api.Interface
 
 	cache sync.Map
 	opt   GenericStoreOption
@@ -91,8 +94,8 @@ func NewGenericStore(opt GenericStoreOption) (*GenericStore, error) {
 	}
 	s := &GenericStore{
 		opt: opt,
+		Stg: storage.GenEtcdStorage(),
 	}
-	s.Stg = storage.GenEtcdStorage()
 
 	return s, nil
 }
@@ -126,7 +129,7 @@ func (s *GenericStore) Init() error {
 
 			for i := range event.Events {
 				switch event.Events[i].Type {
-				case storage.EventTypePut:
+				case storage_api.EventTypePut:
 					key := event.Events[i].Key[len(s.opt.BasePath)+1:]
 					objPtr, err := s.StringToObjPtr(event.Events[i].Value, key)
 					if err != nil {
@@ -134,7 +137,7 @@ func (s *GenericStore) Init() error {
 						continue
 					}
 					s.cache.Store(key, objPtr)
-				case storage.EventTypeDelete:
+				case storage_api.EventTypeDelete:
 					s.cache.Delete(event.Events[i].Key[len(s.opt.BasePath)+1:])
 				}
 			}

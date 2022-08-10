@@ -14,24 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package upstream
+package upstream_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-func TestRoute(t *testing.T) {
-	gomega.RegisterFailHandler(ginkgo.Fail)
-	ginkgo.RunSpecs(t, "upstream suite")
+func TestUpstream(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Upstream Suite")
 }
 
-var _ = ginkgo.AfterSuite(func() {
+var _ = AfterSuite(func() {
 	base.CleanResource("routes")
 	base.CleanResource("upstreams")
 	base.CleanResource("consumers")

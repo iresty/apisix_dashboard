@@ -79,7 +79,7 @@ stop_dashboard() {
 ### Test Case
 #pre
 @test "Build and Deploy APISIX Dashboard Manager API" {
-  run go build -o ./manager-api -ldflags "-X github.com/apisix/manager-api/internal/utils.version=${VERSION} -X github.com/apisix/manager-api/internal/utils.gitHash=${GITHASH}" ./main.go
+  run go build -o ./manager-api -ldflags "-X github.com/apache/apisix-dashboard/api/internal/utils.version=${VERSION} -X github.com/apache/apisix-dashboard/api/internal/utils.gitHash=${GITHASH}" ./main.go
   [ "$status" -eq 0 ]
 
   # prepare service files

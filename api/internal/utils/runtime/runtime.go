@@ -20,7 +20,7 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/apisix/manager-api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/log"
 )
 
 var (

@@ -29,9 +29,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/apisix/manager-api/internal/core/entity"
-	"github.com/apisix/manager-api/internal/core/storage"
-	"github.com/apisix/manager-api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/core/storage"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
+	storage_api "github.com/apache/apisix-dashboard/api/pkg/storage"
 )
 
 func TestNewGenericStore(t *testing.T) {
@@ -115,9 +116,9 @@ func TestGenericStore_Init(t *testing.T) {
 		caseDesc        string
 		giveStore       *GenericStore
 		giveListErr     error
-		giveListRet     []storage.Keypair
-		giveWatchCh     chan storage.WatchResponse
-		giveResp        storage.WatchResponse
+		giveListRet     []storage_api.Keypair
+		giveWatchCh     chan storage_api.WatchResponse
+		giveResp        storage_api.WatchResponse
 		wantErr         error
 		wantCache       map[string]interface{}
 		wantListCalled  bool
@@ -134,7 +135,7 @@ func TestGenericStore_Init(t *testing.T) {
 					},
 				},
 			},
-			giveListRet: []storage.Keypair{
+			giveListRet: []storage_api.Keypair{
 				{
 					Key:   "test/demo1-f1",
 					Value: `{"Field1":"demo1-f1", "Field2":"demo1-f2"}`,
@@ -144,19 +145,19 @@ func TestGenericStore_Init(t *testing.T) {
 					Value: `{"Field1":"demo2-f1", "Field2":"demo2-f2"}`,
 				},
 			},
-			giveWatchCh: make(chan storage.WatchResponse),
-			giveResp: storage.WatchResponse{
-				Events: []storage.Event{
+			giveWatchCh: make(chan storage_api.WatchResponse),
+			giveResp: storage_api.WatchResponse{
+				Events: []storage_api.Event{
 					{
-						Keypair: storage.Keypair{
+						Keypair: storage_api.Keypair{
 							Key:   "test/demo3-f1",
 							Value: `{"Field1":"demo3-f1", "Field2":"demo3-f2"}`,
 						},
-						Type: storage.EventTypePut,
+						Type: storage_api.EventTypePut,
 					},
 					{
-						Type: storage.EventTypeDelete,
-						Keypair: storage.Keypair{
+						Type: storage_api.EventTypeDelete,
+						Keypair: storage_api.Keypair{
 							Key: "test/demo1-f1",
 						},
 					},
@@ -195,7 +196,7 @@ func TestGenericStore_Init(t *testing.T) {
 					},
 				},
 			},
-			giveListRet: []storage.Keypair{
+			giveListRet: []storage_api.Keypair{
 				{
 					Key:   "test/demo1-f1",
 					Value: `{"Field1","demo1-f1", "Field2":"demo1-f2"}`,
@@ -221,7 +222,7 @@ func TestGenericStore_Init(t *testing.T) {
 		mStorage.On("Watch", mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
 			watchCalled = true
 			assert.Equal(t, tc.giveStore.opt.BasePath, args[1], tc.caseDesc)
-		}).Return((<-chan storage.WatchResponse)(tc.giveWatchCh))
+		}).Return((<-chan storage_api.WatchResponse)(tc.giveWatchCh))
 
 		tc.giveStore.Stg = mStorage
 		err := tc.giveStore.Init()

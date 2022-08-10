@@ -14,22 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package schema
+package schema_test
 
 import (
 	"net/http"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("Plugin List", func() {
-	table.DescribeTable("test plugin basic", func(testCase base.HttpTestCase) {
-		base.RunTestCase(testCase)
-	},
-		table.Entry("get all plugins", base.HttpTestCase{
+var _ = Describe("Plugin List", func() {
+	DescribeTable("test plugin basic",
+		func(testCase base.HttpTestCase) {
+			base.RunTestCase(testCase)
+		},
+		Entry("get all plugins", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/plugins",
@@ -39,7 +40,7 @@ var _ = ginkgo.Describe("Plugin List", func() {
 			ExpectBody:   []string{"request-id", "syslog", "echo", "proxy-mirror"},
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("get all plugins", base.HttpTestCase{
+		Entry("get all plugins", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/plugins",

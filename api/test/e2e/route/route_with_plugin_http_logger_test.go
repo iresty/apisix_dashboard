@@ -14,36 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package route
+package route_test
 
 import (
 	"net/http"
 	"time"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
-	"github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/gomega"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("route with plugin http logger", func() {
-	ginkgo.It("cleanup previous error logs", func() {
+var _ = Describe("route with plugin http logger", func() {
+	It("cleanup previous error logs", func() {
 		base.CleanAPISIXErrorLog()
 	})
 
-	table.DescribeTable("test route with http logger plugin",
+	DescribeTable("test route with http logger plugin",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("make sure the route is not created ", base.HttpTestCase{
+		Entry("make sure the route is not created ", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello_",
 			ExpectStatus: http.StatusNotFound,
 			ExpectBody:   `{"error_msg":"404 Route Not Found"}`,
 		}),
-		table.Entry("create route", base.HttpTestCase{
+		Entry("create route", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -74,7 +74,7 @@ var _ = ginkgo.Describe("route with plugin http logger", func() {
 			ExpectBody:   []string{`"code":0`, `"id":"r1"`, `"uri":"/hello_"`, `"name":"route1"`, `"name":"http logger"`},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("access route to trigger log", base.HttpTestCase{
+		Entry("access route to trigger log", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello_",
@@ -84,24 +84,24 @@ var _ = ginkgo.Describe("route with plugin http logger", func() {
 		}),
 	)
 
-	ginkgo.It("verify http logger by checking log", func() {
+	It("verify http logger by checking log", func() {
 		// sleep for process log
 		time.Sleep(1500 * time.Millisecond)
 
 		// verify http logger by checking log
 		//todo: should use a fake upstream for confirming whether we got the log data.
 		logContent := base.ReadAPISIXErrorLog()
-		gomega.Expect(logContent).Should(gomega.ContainSubstring("Batch Processor[http logger] successfully processed the entries"))
+		Expect(logContent).Should(ContainSubstring("Batch Processor[http logger] successfully processed the entries"))
 
 		// clean log
 		base.CleanAPISIXErrorLog()
 	})
 
-	table.DescribeTable("test route for unreachable logger uri",
+	DescribeTable("test route for unreachable logger uri",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("create route with wrong https endpoint", base.HttpTestCase{
+		Entry("create route with wrong https endpoint", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r2",
@@ -132,7 +132,7 @@ var _ = ginkgo.Describe("route with plugin http logger", func() {
 			ExpectBody:   []string{`"code":0`, `"id":"r2"`, `"uri":"/hello"`, `"name":"route2"`, `"name":"http logger"`},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("access route to trigger log", base.HttpTestCase{
+		Entry("access route to trigger log", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -142,25 +142,25 @@ var _ = ginkgo.Describe("route with plugin http logger", func() {
 		}),
 	)
 
-	ginkgo.It("verify http logger by checking log for second route", func() {
+	It("verify http logger by checking log for second route", func() {
 		// sleep for process log
 		time.Sleep(1500 * time.Millisecond)
 
 		// verify http logger by checking log
 		//todo: should use a fake upstream for confirming whether we got the log data.
 		logContent := base.ReadAPISIXErrorLog()
-		gomega.Expect(logContent).Should(gomega.ContainSubstring("Batch Processor[http logger] failed to process entries: failed to connect to host[127.0.0.1] port[8888] connection refused"))
+		Expect(logContent).Should(ContainSubstring("Batch Processor[http logger] failed to process entries: failed to connect to host[127.0.0.1] port[8888] connection refused"))
 
 		// clean log
 		base.CleanAPISIXErrorLog()
 	})
 
 	// todo: check disable http logger - Done
-	table.DescribeTable("rechecking logger after disabling plugin",
+	DescribeTable("rechecking logger after disabling plugin",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("disable route http logger plugin", base.HttpTestCase{
+		Entry("disable route http logger plugin", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r2",
@@ -179,7 +179,7 @@ var _ = ginkgo.Describe("route with plugin http logger", func() {
 			ExpectBody:   []string{`"code":0`, `"id":"r2"`, `"uri":"/hello"`, `"name":"route2"`},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("access route to trigger log (though should not be triggered)", base.HttpTestCase{
+		Entry("access route to trigger log (though should not be triggered)", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -189,30 +189,30 @@ var _ = ginkgo.Describe("route with plugin http logger", func() {
 		}),
 	)
 
-	ginkgo.It("verify http logger has been successfully disabled", func() {
+	It("verify http logger has been successfully disabled", func() {
 		// sleep for process log
 		time.Sleep(1500 * time.Millisecond)
 
 		// verify http logger by checking log
 		logContent := base.ReadAPISIXErrorLog()
-		gomega.Expect(logContent).ShouldNot(gomega.ContainSubstring("Batch Processor[http logger] successfully processed the entries"))
+		Expect(logContent).ShouldNot(ContainSubstring("Batch Processor[http logger] successfully processed the entries"))
 
 		// clean log
 		base.CleanAPISIXErrorLog()
 	})
 
-	table.DescribeTable("cleanup test data",
+	DescribeTable("cleanup test data",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("delete route", base.HttpTestCase{
+		Entry("delete route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("make sure the route has been deleted", base.HttpTestCase{
+		Entry("make sure the route has been deleted", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello_",
@@ -220,14 +220,14 @@ var _ = ginkgo.Describe("route with plugin http logger", func() {
 			ExpectBody:   `{"error_msg":"404 Route Not Found"}`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("delete route 2", base.HttpTestCase{
+		Entry("delete route 2", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r2",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("make sure the route 2 has been deleted", base.HttpTestCase{
+		Entry("make sure the route 2 has been deleted", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",

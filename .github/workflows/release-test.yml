@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - next
     paths-ignore:
       - '.github/**'
       - '.git/**'
@@ -16,6 +17,7 @@ on:
   pull_request:
     branches:
       - master
+      - next
     paths-ignore:
       - '.github/**'
       - '.git/**'

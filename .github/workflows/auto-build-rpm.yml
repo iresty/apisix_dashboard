@@ -2,11 +2,16 @@ name: Auto Build RPM
 
 on:
   push:
-    branches: [master, 'release/**']
+    branches:
+      - master
+      - next
+      - 'release/**'
     paths-ignore:
       - 'docs/**'
   pull_request:
-    branches: [master]
+    branches:
+      - master
+      - next
     paths-ignore:
       - 'docs/**'
 

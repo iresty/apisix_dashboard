@@ -27,8 +27,8 @@ import (
 	"github.com/shiningrush/droplet/wrapper"
 	wgin "github.com/shiningrush/droplet/wrapper/gin"
 
-	"github.com/apisix/manager-api/internal/conf"
-	"github.com/apisix/manager-api/internal/handler"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/handler"
 )
 
 type SchemaHandler struct {

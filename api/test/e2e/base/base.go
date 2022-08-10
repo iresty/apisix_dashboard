@@ -307,11 +307,15 @@ func CleanResource(resource string) {
 	list := gjson.Get(resources, "data.rows").Value().([]interface{})
 	for _, item := range list {
 		resourceObj := item.(map[string]interface{})
+		idTag := "id"
+		if resource == "consumers" {
+			idTag = "username"
+		}
 		tc := HttpTestCase{
-			Desc:    "delete " + resource + "/" + resourceObj["id"].(string),
+			Desc:    "delete " + resource + "/" + resourceObj[idTag].(string),
 			Object:  ManagerApiExpect(),
 			Method:  http.MethodDelete,
-			Path:    "/apisix/admin/" + resource + "/" + resourceObj["id"].(string),
+			Path:    "/apisix/admin/" + resource + "/" + resourceObj[idTag].(string),
 			Headers: map[string]string{"Authorization": GetToken()},
 		}
 		RunTestCase(tc)

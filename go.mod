@@ -1,4 +1,4 @@
-module github.com/apisix/manager-api
+module github.com/apache/apisix-dashboard
 
 go 1.15
 
@@ -17,6 +17,7 @@ require (
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
 	github.com/gin-gonic/gin v1.6.3
+	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
@@ -40,7 +41,6 @@ require (
 	go.etcd.io/etcd v3.3.25+incompatible
 	go.uber.org/zap v1.17.0
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
 	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
 	sigs.k8s.io/yaml v1.2.0 // indirect

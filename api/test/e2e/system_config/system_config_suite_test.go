@@ -17,12 +17,13 @@
 package system_config
 
 import (
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
 	"testing"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 func TestSystemConfig(t *testing.T) {
-	gomega.RegisterFailHandler(ginkgo.Fail)
-	ginkgo.RunSpecs(t, "system config suite")
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "System Config Suite")
 }

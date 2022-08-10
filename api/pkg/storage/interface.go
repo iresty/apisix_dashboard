@@ -14,35 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package storage_api
 
-package migrate
+import "context"
 
-import (
-	"context"
-
-	"github.com/apisix/manager-api/internal/core/store"
-	"github.com/apisix/manager-api/internal/log"
-)
-
-func isConflicted(ctx context.Context, new *DataSet) (bool, *DataSet) {
-	isConflict := false
-	conflictedData := newDataSet()
-	store.RangeStore(func(key store.HubKey, s *store.GenericStore) bool {
-		new.rangeData(key, func(i int, obj interface{}) bool {
-			// Only check key of store conflict for now.
-			// TODO: Maybe check name of some entiries.
-			_, err := s.CreateCheck(obj)
-			if err != nil {
-				isConflict = true
-				err = conflictedData.Add(obj)
-				if err != nil {
-					log.Errorf("Add obj to conflict list failed:%s", err)
-					return true
-				}
-			}
-			return true
-		})
-		return true
-	})
-	return isConflict, conflictedData
+type Interface interface {
+	Get(ctx context.Context, key string) (string, error)
+	List(ctx context.Context, key string) ([]Keypair, error)
+	Create(ctx context.Context, key, val string) error
+	Update(ctx context.Context, key, val string) error
+	BatchDelete(ctx context.Context, keys []string) error
+	Watch(ctx context.Context, key string) <-chan WatchResponse
 }
+
+type WatchResponse struct {
+	Events   []Event
+	Error    error
+	Canceled bool
+}
+
+type Keypair struct {
+	Key   string
+	Value string
+}
+
+type Event struct {
+	Keypair
+	Type EventType
+}
+
+type EventType string
+
+var (
+	EventTypePut    EventType = "put"
+	EventTypeDelete EventType = "delete"
+)

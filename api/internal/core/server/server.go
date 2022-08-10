@@ -25,9 +25,9 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/apisix/manager-api/internal/conf"
-	"github.com/apisix/manager-api/internal/log"
-	"github.com/apisix/manager-api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
 )
 
 // server is the manager of Manager API, which is responsible for managing the life cycle of Manager API, including initialization, start, stop and so on

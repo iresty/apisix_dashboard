@@ -14,23 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package route
+package route_test
 
 import (
 	"net/http"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("test route with valid uri uris", func() {
-	table.DescribeTable("test route with valid uri uris",
+var _ = Describe("test route with valid uri uris", func() {
+	DescribeTable("test route with valid uri uris",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("add route with valid uri", base.HttpTestCase{
+		Entry("add route with valid uri", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Path:   "/apisix/admin/routes/r1",
 			Method: http.MethodPut,
@@ -47,7 +47,7 @@ var _ = ginkgo.Describe("test route with valid uri uris", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("hit the route (r1)", base.HttpTestCase{
+		Entry("hit the route (r1)", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -56,7 +56,7 @@ var _ = ginkgo.Describe("test route with valid uri uris", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("delete the route (r1)", base.HttpTestCase{
+		Entry("delete the route (r1)", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
@@ -64,7 +64,7 @@ var _ = ginkgo.Describe("test route with valid uri uris", func() {
 			ExpectStatus: http.StatusOK,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("hit the route just delete", base.HttpTestCase{
+		Entry("hit the route just delete", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -73,7 +73,7 @@ var _ = ginkgo.Describe("test route with valid uri uris", func() {
 			ExpectBody:   `{"error_msg":"404 Route Not Found"}`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("add route with valid uris", base.HttpTestCase{
+		Entry("add route with valid uris", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -90,7 +90,7 @@ var _ = ginkgo.Describe("test route with valid uri uris", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("hit the route (/hello)", base.HttpTestCase{
+		Entry("hit the route (/hello)", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -99,7 +99,7 @@ var _ = ginkgo.Describe("test route with valid uri uris", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("hit the route (/status)", base.HttpTestCase{
+		Entry("hit the route (/status)", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/status",
@@ -108,7 +108,7 @@ var _ = ginkgo.Describe("test route with valid uri uris", func() {
 			ExpectBody:   "ok",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("delete the route (r1)", base.HttpTestCase{
+		Entry("delete the route (r1)", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
@@ -116,7 +116,7 @@ var _ = ginkgo.Describe("test route with valid uri uris", func() {
 			ExpectStatus: http.StatusOK,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("hit the route just delete", base.HttpTestCase{
+		Entry("hit the route just delete", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",

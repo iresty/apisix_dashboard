@@ -27,7 +27,7 @@ import (
 	"github.com/savsgio/gotils/bytes"
 	"github.com/tidwall/gjson"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 var _ = Describe("OpenAPI 3", func() {

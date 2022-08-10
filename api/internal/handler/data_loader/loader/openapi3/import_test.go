@@ -22,7 +22,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/apisix/manager-api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
 )
 
 var (

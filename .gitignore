@@ -69,3 +69,6 @@ web/public/monaco-editor/
 *.swp
 *.swo
 
+# Editors
+.vscode/
+.idea/

@@ -30,12 +30,12 @@ import (
 	"github.com/shiningrush/droplet/wrapper"
 	wgin "github.com/shiningrush/droplet/wrapper/gin"
 
-	"github.com/apisix/manager-api/internal/conf"
-	"github.com/apisix/manager-api/internal/core/entity"
-	"github.com/apisix/manager-api/internal/core/store"
-	"github.com/apisix/manager-api/internal/handler"
-	loader "github.com/apisix/manager-api/internal/handler/data_loader/loader"
-	"github.com/apisix/manager-api/internal/handler/data_loader/loader/openapi3"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/core/store"
+	"github.com/apache/apisix-dashboard/api/internal/handler"
+	loader "github.com/apache/apisix-dashboard/api/internal/handler/data_loader/loader"
+	"github.com/apache/apisix-dashboard/api/internal/handler/data_loader/loader/openapi3"
 )
 
 type ImportHandler struct {

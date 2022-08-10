@@ -14,22 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package upstream
+package upstream_test
 
 import (
 	"encoding/json"
 	"net/http"
 	"time"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 // just test for schema check
-var _ = ginkgo.Describe("Upstream priority", func() {
-	ginkgo.It("create upstream with priority", func() {
+var _ = Describe("Upstream priority", func() {
+	It("create upstream with priority", func() {
 		createUpstreamBody := make(map[string]interface{})
 		createUpstreamBody["nodes"] = []map[string]interface{}{
 			{
@@ -43,7 +43,7 @@ var _ = ginkgo.Describe("Upstream priority", func() {
 		createUpstreamBody["retries"] = 5
 		createUpstreamBody["retry_timeout"] = 5.5
 		_createUpstreamBody, err := json.Marshal(createUpstreamBody)
-		gomega.Expect(err).To(gomega.BeNil())
+		Expect(err).To(BeNil())
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodPut,
@@ -53,7 +53,7 @@ var _ = ginkgo.Describe("Upstream priority", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("delete upstream", func() {
+	It("delete upstream", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -65,8 +65,8 @@ var _ = ginkgo.Describe("Upstream priority", func() {
 })
 
 //test node priority
-var _ = ginkgo.Describe("Upstream priority", func() {
-	ginkgo.It("create upstream with priority", func() {
+var _ = Describe("Upstream priority", func() {
+	It("create upstream with priority", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
@@ -92,7 +92,7 @@ var _ = ginkgo.Describe("Upstream priority", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("create route using the upstream", func() {
+	It("create route using the upstream", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
@@ -107,17 +107,17 @@ var _ = ginkgo.Describe("Upstream priority", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("batch test /server_port api", func() {
+	It("batch test /server_port api", func() {
 		// sleep for etcd sync
 		time.Sleep(time.Duration(300) * time.Millisecond)
 
 		// batch test /server_port api
 		res := base.BatchTestServerPort(12, nil, "")
 
-		gomega.Expect(res["1980"]).Should(gomega.Equal(0))
-		gomega.Expect(res["1981"]).Should(gomega.Equal(12))
+		Expect(res["1980"]).Should(Equal(0))
+		Expect(res["1981"]).Should(Equal(12))
 	})
-	ginkgo.It("update upstream with priority", func() {
+	It("update upstream with priority", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
@@ -143,17 +143,17 @@ var _ = ginkgo.Describe("Upstream priority", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("batch test /server_port api", func() {
+	It("batch test /server_port api", func() {
 		// sleep for etcd sync
 		time.Sleep(time.Duration(300) * time.Millisecond)
 
 		// batch test /server_port api
 		res := base.BatchTestServerPort(12, nil, "")
 
-		gomega.Expect(res["1980"]).Should(gomega.Equal(12))
-		gomega.Expect(res["1981"]).Should(gomega.Equal(0))
+		Expect(res["1980"]).Should(Equal(12))
+		Expect(res["1981"]).Should(Equal(0))
 	})
-	ginkgo.It("delete route", func() {
+	It("delete route", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -162,7 +162,7 @@ var _ = ginkgo.Describe("Upstream priority", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("delete upstream", func() {
+	It("delete upstream", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,

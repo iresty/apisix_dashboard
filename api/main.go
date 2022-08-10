@@ -17,9 +17,16 @@
 package main
 
 import (
-	"github.com/apisix/manager-api/cmd"
+	"fmt"
+	"os"
+
+	"github.com/apache/apisix-dashboard/api/cmd"
 )
 
 func main() {
-	cmd.Execute()
+	rootCmd := cmd.NewRootCommand()
+	if err := rootCmd.Execute(); err != nil {
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

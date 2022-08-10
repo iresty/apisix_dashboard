@@ -19,7 +19,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/apisix/manager-api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
 )
 
 func newVersionCommand() *cobra.Command {

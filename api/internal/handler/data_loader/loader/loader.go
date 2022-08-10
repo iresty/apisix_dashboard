@@ -16,7 +16,7 @@
  */
 package loader
 
-import "github.com/apisix/manager-api/internal/core/entity"
+import "github.com/apache/apisix-dashboard/api/internal/core/entity"
 
 // DataSets are intermediate structures used to handle
 // import and export data with APISIX entities.

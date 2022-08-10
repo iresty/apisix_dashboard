@@ -14,35 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package route
+package route_test
 
 import (
 	"io/ioutil"
 	"net/http"
 	"time"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
-	"github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/gomega"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("route with jwt plugin", func() {
+var _ = Describe("route with jwt plugin", func() {
 	var jwtToken string
 
-	table.DescribeTable("create route and consumer with jwt plugin",
+	DescribeTable("create route and consumer with jwt plugin",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("make sure the route is not created ", base.HttpTestCase{
+		Entry("make sure the route is not created ", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
 			ExpectStatus: http.StatusNotFound,
 			ExpectBody:   `{"error_msg":"404 Route Not Found"}`,
 		}),
-		table.Entry("create route", base.HttpTestCase{
+		Entry("create route", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -63,14 +63,14 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   []string{`"code":0`, `"id":"r1"`, `"uri":"/hello"`, `"name":"route1"`, `"jwt-auth":{}`},
 		}),
-		table.Entry("make sure the consumer is not created", base.HttpTestCase{
+		Entry("make sure the consumer is not created", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/consumers/jack",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusNotFound,
 		}),
-		table.Entry("create consumer", base.HttpTestCase{
+		Entry("create consumer", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Path:   "/apisix/admin/consumers",
 			Method: http.MethodPut,
@@ -90,21 +90,21 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 			ExpectBody:   []string{`"code":0`, `"username":"jack"`, `"key":"user-key"`, `"secret":"my-secret-key"`},
 		}),
 	)
-	ginkgo.It("sign jwt token", func() {
+	It("sign jwt token", func() {
 		time.Sleep(base.SleepTime)
 
 		// sign jwt token
 		body, status, err := base.HttpGet(base.APISIXHost+"/apisix/plugin/jwt/sign?key=user-key", nil)
-		gomega.Expect(err).To(gomega.BeNil())
-		gomega.Expect(status).To(gomega.Equal(http.StatusOK))
+		Expect(err).To(BeNil())
+		Expect(status).To(Equal(http.StatusOK))
 		jwtToken = string(body)
 		// sign jwt token with not exists key
 		body, status, err = base.HttpGet(base.APISIXHost+"/apisix/plugin/jwt/sign?key=not-exist-key", nil)
-		gomega.Expect(err).To(gomega.BeNil())
-		gomega.Expect(status).To(gomega.Equal(http.StatusNotFound))
+		Expect(err).To(BeNil())
+		Expect(status).To(Equal(http.StatusNotFound))
 	})
 
-	ginkgo.It("verify route with correct jwt token", func() {
+	It("verify route with correct jwt token", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -115,11 +115,11 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 		})
 	})
 
-	table.DescribeTable("verify token and clean consumer",
+	DescribeTable("verify token and clean consumer",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("verify route without jwt token", base.HttpTestCase{
+		Entry("verify route without jwt token", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -127,7 +127,7 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 			ExpectBody:   `{"message":"Missing JWT token in request"}`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify route with incorrect jwt token", base.HttpTestCase{
+		Entry("verify route with incorrect jwt token", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -135,7 +135,7 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 			ExpectStatus: http.StatusUnauthorized,
 			ExpectBody:   `{"message":"invalid jwt string"}`,
 		}),
-		table.Entry("delete consumer", base.HttpTestCase{
+		Entry("delete consumer", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/consumers/jack",
@@ -144,7 +144,7 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 		}),
 	)
 
-	ginkgo.It("verify route with the jwt token from just deleted consumer", func() {
+	It("verify route with the jwt token from just deleted consumer", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -156,18 +156,18 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 		})
 	})
 
-	table.DescribeTable("cleanup route and verify",
+	DescribeTable("cleanup route and verify",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("delete route", base.HttpTestCase{
+		Entry("delete route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify the deleted route", base.HttpTestCase{
+		Entry("verify the deleted route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -177,11 +177,11 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 		}),
 	)
 
-	table.DescribeTable("create route and consumer with jwt (no algorithm)",
+	DescribeTable("create route and consumer with jwt (no algorithm)",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("create consumer with jwt (no algorithm)", base.HttpTestCase{
+		Entry("create consumer with jwt (no algorithm)", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Path:   "/apisix/admin/consumers",
 			Method: http.MethodPut,
@@ -201,7 +201,7 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 			ExpectBody: []string{`"code":0`, `"username":"consumer_1"`,
 				`"jwt-auth":{"exp":86400,"key":"user-key","secret":"my-secret-key"}`},
 		}),
-		table.Entry("get the consumer", base.HttpTestCase{
+		Entry("get the consumer", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/consumers/consumer_1",
 			Method:       http.MethodGet,
@@ -210,7 +210,7 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 			ExpectBody:   `"username":"consumer_1"`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("create the route", base.HttpTestCase{
+		Entry("create the route", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -233,19 +233,19 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 		}),
 	)
 
-	ginkgo.It("get the jwt token", func() {
+	It("get the jwt token", func() {
 		time.Sleep(base.SleepTime)
 
 		request, _ := http.NewRequest("GET", base.APISIXHost+"/apisix/plugin/jwt/sign?key=user-key", nil)
 		resp, err := http.DefaultClient.Do(request)
-		gomega.Expect(err).To(gomega.BeNil())
+		Expect(err).To(BeNil())
 		defer resp.Body.Close()
-		gomega.Expect(resp.StatusCode).To(gomega.Equal(http.StatusOK))
+		Expect(resp.StatusCode).To(Equal(http.StatusOK))
 		jwtTokenBytes, _ := ioutil.ReadAll(resp.Body)
 		jwtToken = string(jwtTokenBytes)
 	})
 
-	ginkgo.It("hit route with jwt token", func() {
+	It("hit route with jwt token", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -257,11 +257,11 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 		})
 	})
 
-	table.DescribeTable("cleanup consumer and route",
+	DescribeTable("cleanup consumer and route",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("delete consumer", base.HttpTestCase{
+		Entry("delete consumer", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/consumers/consumer_1",
 			Method:       http.MethodDelete,
@@ -269,7 +269,7 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   `"code":0`,
 		}),
-		table.Entry("after delete consumer verify it again", base.HttpTestCase{
+		Entry("after delete consumer verify it again", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/consumers/jack",
@@ -278,14 +278,14 @@ var _ = ginkgo.Describe("route with jwt plugin", func() {
 			ExpectBody:   `"message":"data not found"`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("delete the route", base.HttpTestCase{
+		Entry("delete the route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify the deleted route", base.HttpTestCase{
+		Entry("verify the deleted route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",

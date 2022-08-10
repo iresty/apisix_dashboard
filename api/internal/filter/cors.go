@@ -19,7 +19,7 @@ package filter
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/apisix/manager-api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
 )
 
 func CORS() gin.HandlerFunc {

@@ -1,4 +1,4 @@
-module github.com/apisix/manager-api/test/e2e
+module github.com/apache/apisix-dashboard/api/test/e2e
 
 go 1.15
 

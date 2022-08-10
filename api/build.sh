@@ -20,7 +20,7 @@ set -e
 VERSION=$(cat ./api/VERSION)
 GITHASH=$(cat ./.githash 2> /dev/null || HASH="ref: HEAD"; while [[ $HASH == ref\:* ]]; do HASH="$(cat ".git/$(echo $HASH | cut -d \  -f 2)")"; done; echo ${HASH:0:7})
 
-GOLDFLAGS="-X github.com/apisix/manager-api/internal/utils.version=${VERSION} -X github.com/apisix/manager-api/internal/utils.gitHash=${GITHASH}"
+GOLDFLAGS="-X github.com/apache/apisix-dashboard/api/internal/utils.version=${VERSION} -X github.com/apache/apisix-dashboard/api/internal/utils.gitHash=${GITHASH}"
 
 # Enter dry-run mode
 if [ "$1" == "--dry-run" ]; then
@@ -36,7 +36,7 @@ rm -rf output && mkdir -p output/conf && mkdir -p output/dag-to-lua
 
 # get dag-to-lua lib
 if [[ ! -f "dag-to-lua-1.1/lib/dag-to-lua.lua" ]]; then
-    wget https://github.com/api7/dag-to-lua/archive/v1.1.tar.gz -P /tmp
+    curl -Lso /tmp/v1.1.tar.gz https://github.com/api7/dag-to-lua/archive/v1.1.tar.gz
     tar -zxvf /tmp/v1.1.tar.gz -C /tmp
     cp -r /tmp/dag-to-lua-1.1/lib/* ./output/dag-to-lua
 fi

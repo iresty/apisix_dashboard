@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package plugin_config
+package plugin_config_test
 
 import (
 	"testing"
@@ -22,11 +22,11 @@ import (
 
 	"github.com/onsi/ginkgo"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 func TestPluginConfig(t *testing.T) {
-	ginkgo.RunSpecs(t, "plugin config suite")
+	ginkgo.RunSpecs(t, "Plugin Config Suite")
 }
 
 var _ = ginkgo.AfterSuite(func() {

@@ -23,12 +23,12 @@ import (
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 func TestStreamRoute(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
-	ginkgo.RunSpecs(t, "stream route suite")
+	ginkgo.RunSpecs(t, "Stream Route Suite")
 }
 
 var _ = ginkgo.AfterSuite(func() {

@@ -19,19 +19,18 @@ package label
 import (
 	"net/http"
 
-	"github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("Test label", func() {
-	ginkgo.Context("test label", func() {
-		ginkgo.It("config route", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object: base.ManagerApiExpect(),
-				Path:   "/apisix/admin/routes/r1",
-				Method: http.MethodPut,
-				Body: `{
+var _ = Describe("Test label", func() {
+	It("Create route", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Path:   "/apisix/admin/routes/r1",
+			Method: http.MethodPut,
+			Body: `{
 					 "name": "route1",
 					 "uri": "/hello",
 					 "labels": {
@@ -48,16 +47,16 @@ var _ = ginkgo.Describe("Test label", func() {
 						 }]
 					 }
 				 }`,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("create consumer", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object: base.ManagerApiExpect(),
-				Path:   "/apisix/admin/consumers/c1",
-				Method: http.MethodPut,
-				Body: `{
+	})
+	It("Create consumer", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Path:   "/apisix/admin/consumers/c1",
+			Method: http.MethodPut,
+			Body: `{
 					 "username": "c1",
 					 "plugins": {
 						 "key-auth": {
@@ -71,16 +70,16 @@ var _ = ginkgo.Describe("Test label", func() {
 					 },
 					 "desc": "test description"
 				 }`,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("create upstream", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object: base.ManagerApiExpect(),
-				Method: http.MethodPut,
-				Path:   "/apisix/admin/upstreams/u1",
-				Body: `{
+	})
+	It("Create upstream", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPut,
+			Path:   "/apisix/admin/upstreams/u1",
+			Body: `{
 					 "nodes": [{
 						 "host": "` + base.UpstreamIp + `",
 						 "port": 1980,
@@ -93,16 +92,16 @@ var _ = ginkgo.Describe("Test label", func() {
 					 },
 					 "type": "roundrobin"
 				 }`,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("create service", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object: base.ManagerApiExpect(),
-				Method: http.MethodPost,
-				Path:   "/apisix/admin/services",
-				Body: `{
+	})
+	It("Create service", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPost,
+			Path:   "/apisix/admin/services",
+			Body: `{
 					 "id": "s1",
 					 "plugins": {
 						 "limit-count": {
@@ -128,16 +127,16 @@ var _ = ginkgo.Describe("Test label", func() {
 						 "extra": "test"
 					 }
 				 }`,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("create plugin_config", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object: base.ManagerApiExpect(),
-				Method: http.MethodPut,
-				Path:   "/apisix/admin/plugin_configs/1",
-				Body: `{
+	})
+	It("Create plugin config", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPut,
+			Path:   "/apisix/admin/plugin_configs/1",
+			Body: `{
 					 "plugins": {
 						 "response-rewrite": {
 							 "headers": {
@@ -151,67 +150,67 @@ var _ = ginkgo.Describe("Test label", func() {
 						 "extra":   "test"
 					 }
 				 }`,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("get route label", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Path:         "/apisix/admin/labels/route",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"env\":\"production\"},{\"version\":\"v2\"}",
-				Sleep:        base.SleepTime,
-			})
+	})
+	It("Get route label", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Path:         "/apisix/admin/labels/route",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"env":"production"},{"version":"v2"}`,
+			Sleep:        base.SleepTime,
 		})
-		ginkgo.It("get consumer label", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Path:         "/apisix/admin/labels/consumer",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"env\":\"production\"},{\"version\":\"v3\"}",
-			})
+	})
+	It("Get consumer label", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Path:         "/apisix/admin/labels/consumer",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"env":"production"},{"version":"v3"}`,
 		})
-		ginkgo.It("get upstream label", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Path:         "/apisix/admin/labels/upstream",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"17\"},{\"env\":\"production\"},{\"version\":\"v2\"}",
-			})
+	})
+	It("Get upstream label", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Path:         "/apisix/admin/labels/upstream",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"17"},{"env":"production"},{"version":"v2"}`,
 		})
-		ginkgo.It("get service label", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Path:         "/apisix/admin/labels/service",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"env\":\"production\"},{\"extra\":\"test\"},{\"version\":\"v2\"}",
-			})
+	})
+	It("Get service label", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Path:         "/apisix/admin/labels/service",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"env":"production"},{"extra":"test"},{"version":"v2"}`,
 		})
-		ginkgo.It("get plugin_config label", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Path:         "/apisix/admin/labels/plugin_config",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"17\"},{\"extra\":\"test\"},{\"version\":\"v2\"}",
-			})
+	})
+	It("Get plugin config label", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Path:         "/apisix/admin/labels/plugin_config",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"17"},{"extra":"test"},{"version":"v2"}`,
 		})
-		ginkgo.It("update plugin_config", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object: base.ManagerApiExpect(),
-				Method: http.MethodPut,
-				Path:   "/apisix/admin/plugin_configs/1",
-				Body: `{
+	})
+	It("Update plugin config", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPut,
+			Path:   "/apisix/admin/plugin_configs/1",
+			Body: `{
 					 "plugins": {
 						 "response-rewrite": {
 							 "headers": {
@@ -225,185 +224,184 @@ var _ = ginkgo.Describe("Test label", func() {
 						 "extra":   "test"
 					 }
 				 }`,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("get plugin_config label again to verify update", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Path:         "/apisix/admin/labels/plugin_config",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"extra\":\"test\"},{\"version\":\"v3\"}",
-				Sleep:        base.SleepTime,
-			})
+	})
+	It("Get plugin config (Updated)", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Path:         "/apisix/admin/labels/plugin_config",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"extra":"test"},{"version":"v3"}`,
+			Sleep:        base.SleepTime,
 		})
-		ginkgo.It("get all label", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"build\":\"17\"},{\"env\":\"production\"},{\"extra\":\"test\"},{\"version\":\"v2\"},{\"version\":\"v3\"}",
-			})
+	})
+	It("List label", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"build":"17"},{"env":"production"},{"extra":"test"},{"version":"v2"},{"version":"v3"}`,
 		})
-		ginkgo.It("get label with page", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Query:        "page=1&page_size=1",
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"}",
-			})
+	})
+	It("List label (Paginate) #1", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Query:        "page=1&page_size=1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"}`,
 		})
-		ginkgo.It("get label with page", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Query:        "page=3&page_size=1",
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"env\":\"production\"}",
-			})
+	})
+	It("List label (Paginate) #2", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Query:        "page=3&page_size=1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"env":"production"}`,
 		})
-		ginkgo.It("get labels (key = build)", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Query:        "label=build",
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"build\":\"17\"}",
-			})
+	})
+	It("Get labels (With condition, key = build)", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Query:        "label=build",
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"build":"17"}`,
 		})
-		ginkgo.It("get labels with the same key (key = build)", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Query:        "label=build:16,build:17",
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"build\":\"17\"}",
-			})
+	})
+	It("Get labels with the same key (With condition, key = build)", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Query:        "label=build:16,build:17",
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"build":"17"}`,
 		})
-		ginkgo.It("get labels (key = build) with page", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Query:        "label=build&page=2&page_size=1",
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"17\"}",
-			})
+	})
+	It("Get labels (With condition, key = build; Paginate)", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Query:        "label=build&page=2&page_size=1",
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"17"}`,
 		})
-		ginkgo.It("get labels with same key (key = build) and page", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Query:        "label=build:16,build:17&page=1&page_size=2",
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"build\":\"17\"}",
-			})
+	})
+	It("Get labels with same key (With condition, key = build; Paginate)", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Query:        "label=build:16,build:17&page=1&page_size=2",
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"build":"17"}`,
 		})
-		ginkgo.It("get labels with same key (key = build) and page", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Query:        "label=build:16,build:17&page=2&page_size=1",
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"17\"}",
-			})
+	})
+	It("Get labels with same key (With condition, key = build; Paginate)", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Query:        "label=build:16,build:17&page=2&page_size=1",
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"17"}`,
 		})
-		ginkgo.It("get labels (key = build && env = production)", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Query:        "label=build,env:production",
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"build\":\"17\"},{\"env\":\"production\"}",
-			})
+	})
+	It("Get labels (With condition, key = build && env = production)", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Query:        "label=build,env:production",
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"build":"17"},{"env":"production"}`,
 		})
-		ginkgo.It("get labels (build=16 | 17 and env = production)", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Query:        "label=build:16,build:17,env:production",
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"build\":\"16\"},{\"build\":\"17\"},{\"env\":\"production\"}",
-			})
+	})
+	It("Get labels (With condition, build=16|17 && env = production)", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Query:        "label=build:16,build:17,env:production",
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"build":"16"},{"build":"17"},{"env":"production"}`,
 		})
-		ginkgo.It("get labels (key = build && env = production) with page", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodGet,
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				Query:        "label=build,env:production&page=3&page_size=1",
-				Path:         "/apisix/admin/labels/all",
-				ExpectStatus: http.StatusOK,
-				ExpectBody:   "{\"env\":\"production\"}",
-			})
+	})
+	It("Get labels (With condition, key = build && env = production; Paginate)", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			Query:        "label=build,env:production&page=3&page_size=1",
+			Path:         "/apisix/admin/labels/all",
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `{"env":"production"}`,
 		})
-		ginkgo.It("delete route", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodDelete,
-				Path:         "/apisix/admin/routes/r1",
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+	})
+	It("Delete route", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodDelete,
+			Path:         "/apisix/admin/routes/r1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("delete consumer", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodDelete,
-				Path:         "/apisix/admin/consumers/c1",
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+	})
+	It("Delete consumer", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodDelete,
+			Path:         "/apisix/admin/consumers/c1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("delete service", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodDelete,
-				Path:         "/apisix/admin/services/s1",
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+	})
+	It("Delete service", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodDelete,
+			Path:         "/apisix/admin/services/s1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("delete upstream", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodDelete,
-				Path:         "/apisix/admin/upstreams/u1",
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+	})
+	It("Delete upstream", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodDelete,
+			Path:         "/apisix/admin/upstreams/u1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
-		ginkgo.It("delete plugin_config", func() {
-			base.RunTestCase(base.HttpTestCase{
-				Object:       base.ManagerApiExpect(),
-				Method:       http.MethodDelete,
-				Path:         "/apisix/admin/plugin_configs/1",
-				Headers:      map[string]string{"Authorization": base.GetToken()},
-				ExpectStatus: http.StatusOK,
-			})
+	})
+	It("Delete plugin config", func() {
+		base.RunTestCase(base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodDelete,
+			Path:         "/apisix/admin/plugin_configs/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
 		})
 	})
 })

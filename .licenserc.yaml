@@ -1,0 +1,67 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+header:
+  license:
+    spdx-id: Apache-2.0
+    copyright-owner: Apache Software Foundation
+
+  license-location-threshold: 250
+
+  paths-ignore:
+    # Frontend files
+    - 'web/yarn.lock'
+
+    # Frontend copied files
+    - 'web/src/components/HeaderDropdown/index.less'
+    - 'web/src/components/HeaderDropdown/index.tsx'
+    - 'web/src/components/NoticeIcon/NoticeList.less'
+    - 'web/src/components/NoticeIcon/NoticeList.tsx'
+    - 'web/src/components/NoticeIcon/index.less'
+    - 'web/src/components/NoticeIcon/index.tsx'
+    - 'web/src/components/PageLoading/index.tsx'
+    - 'web/src/components/PluginFlow/components/Toolbar/index.tsx'
+    - 'web/src/components/RightContent/AvatarDropdown.tsx'
+    - 'web/src/components/RightContent/index.less'
+    - 'web/src/components/RightContent/index.tsx'
+    - 'web/src/libs/iconfont.js'
+    - 'web/src/pages/404.tsx'
+    - 'web/src/pages/document.ejs'
+
+    # Backend files
+    - 'api/logs/.gitkeep'
+    - 'api/service/apisix-dashboard.service'
+    - 'api/VERSION'
+
+    # Other files
+    - 'go.mod'
+    - 'go.sum'
+    - '**/*.log'
+    - 'LICENSE'
+    - 'NOTICE'
+    - '**/*.json'
+    - '**/*.key'
+    - '**/*.crt'
+    - '**/*.pem'
+    - '**/*.svg'
+    - '**/*.pb.go'
+    - '.github/'
+    - '.yamllint'
+    - '.gitignore'
+    - '.gitmodules'
+    - '.dockerignore'
+
+  comment: on-failure

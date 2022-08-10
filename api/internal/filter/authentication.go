@@ -23,8 +23,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 
-	"github.com/apisix/manager-api/internal/conf"
-	"github.com/apisix/manager-api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/log"
 )
 
 func Authentication() gin.HandlerFunc {

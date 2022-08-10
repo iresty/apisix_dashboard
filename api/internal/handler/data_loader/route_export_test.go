@@ -23,8 +23,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/apisix/manager-api/internal/core/entity"
-	"github.com/apisix/manager-api/internal/core/store"
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/core/store"
 	"github.com/shiningrush/droplet"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

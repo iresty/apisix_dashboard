@@ -18,56 +18,18 @@ package store
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io/ioutil"
 
 	"github.com/xeipuuv/gojsonschema"
 	"go.uber.org/zap/buffer"
 
-	"github.com/apisix/manager-api/internal/conf"
-	"github.com/apisix/manager-api/internal/core/entity"
-	"github.com/apisix/manager-api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/log"
 )
 
 type Validator interface {
 	Validate(obj interface{}) error
-}
-type JsonSchemaValidator struct {
-	schema *gojsonschema.Schema
-}
-
-func NewJsonSchemaValidator(jsonPath string) (Validator, error) {
-	bs, err := ioutil.ReadFile(jsonPath)
-	if err != nil {
-		return nil, fmt.Errorf("get abs path failed: %s", err)
-	}
-	s, err := gojsonschema.NewSchema(gojsonschema.NewStringLoader(string(bs)))
-	if err != nil {
-		return nil, fmt.Errorf("new schema failed: %s", err)
-	}
-	return &JsonSchemaValidator{
-		schema: s,
-	}, nil
-}
-
-func (v *JsonSchemaValidator) Validate(obj interface{}) error {
-	ret, err := v.schema.Validate(gojsonschema.NewGoLoader(obj))
-	if err != nil {
-		return fmt.Errorf("validate failed: %s", err)
-	}
-
-	if !ret.Valid() {
-		errString := buffer.Buffer{}
-		for i, vErr := range ret.Errors() {
-			if i != 0 {
-				errString.AppendString("\n")
-			}
-			errString.AppendString(vErr.String())
-		}
-		return errors.New(errString.String())
-	}
-	return nil
 }
 
 type APISIXJsonSchemaValidator struct {

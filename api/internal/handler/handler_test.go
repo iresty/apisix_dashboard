@@ -26,7 +26,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/apisix/manager-api/internal/core/store"
+	"github.com/apache/apisix-dashboard/api/internal/core/store"
 )
 
 func TestSpecCodeResponse(t *testing.T) {

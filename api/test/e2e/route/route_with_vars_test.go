@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package route
+package route_test
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 var upstream map[string]interface{} = map[string]interface{}{
@@ -37,8 +37,8 @@ var upstream map[string]interface{} = map[string]interface{}{
 	},
 }
 
-var _ = ginkgo.Describe("test route with vars (args)", func() {
-	ginkgo.It("add route with vars (args)", func() {
+var _ = Describe("test route with vars (args)", func() {
+	It("add route with vars (args)", func() {
 		var createRouteBody map[string]interface{} = map[string]interface{}{
 			"name": "route1",
 			"uri":  "/hello",
@@ -48,7 +48,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			"upstream": upstream,
 		}
 		_createRouteBody, err := json.Marshal(createRouteBody)
-		gomega.Expect(err).To(gomega.BeNil())
+		Expect(err).To(BeNil())
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodPut,
@@ -58,7 +58,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("hit the route with right args", func() {
+	It("hit the route with right args", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -69,7 +69,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route with wrong args", func() {
+	It("hit the route with wrong args", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -80,7 +80,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route with no args", func() {
+	It("hit the route with no args", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -90,7 +90,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("update route with vars (header)", func() {
+	It("update route with vars (header)", func() {
 		var createRouteBody map[string]interface{} = map[string]interface{}{
 			"name": "route1",
 			"uri":  "/hello",
@@ -100,7 +100,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			"upstream": upstream,
 		}
 		_createRouteBody, err := json.Marshal(createRouteBody)
-		gomega.Expect(err).To(gomega.BeNil())
+		Expect(err).To(BeNil())
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodPut,
@@ -110,7 +110,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("hit the route with right header", func() {
+	It("hit the route with right header", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -121,7 +121,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route with wrong header", func() {
+	It("hit the route with wrong header", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -132,7 +132,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route with no header", func() {
+	It("hit the route with no header", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -142,7 +142,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("update route with vars (cookie)", func() {
+	It("update route with vars (cookie)", func() {
 		var createRouteBody map[string]interface{} = map[string]interface{}{
 			"name": "route1",
 			"uri":  "/hello",
@@ -152,7 +152,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			"upstream": upstream,
 		}
 		_createRouteBody, err := json.Marshal(createRouteBody)
-		gomega.Expect(err).To(gomega.BeNil())
+		Expect(err).To(BeNil())
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodPut,
@@ -162,7 +162,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("hit the route with right Cookie", func() {
+	It("hit the route with right Cookie", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -173,7 +173,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route with wrong Cookie", func() {
+	It("hit the route with wrong Cookie", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -184,7 +184,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route with no Cookie", func() {
+	It("hit the route with no Cookie", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -194,7 +194,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("delete route", func() {
+	It("delete route", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -204,7 +204,7 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route just delete", func() {
+	It("hit the route just delete", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -217,8 +217,8 @@ var _ = ginkgo.Describe("test route with vars (args)", func() {
 	})
 })
 
-var _ = ginkgo.Describe("test route with multiple vars (args, cookie and header)", func() {
-	ginkgo.It("add route with multiple vars (args, cookie and header)", func() {
+var _ = Describe("test route with multiple vars (args, cookie and header)", func() {
+	It("add route with multiple vars (args, cookie and header)", func() {
 		var createRouteBody map[string]interface{} = map[string]interface{}{
 			"name": "route1",
 			"uri":  "/hello",
@@ -230,7 +230,7 @@ var _ = ginkgo.Describe("test route with multiple vars (args, cookie and header)
 			"upstream": upstream,
 		}
 		_createRouteBody, err := json.Marshal(createRouteBody)
-		gomega.Expect(err).To(gomega.BeNil())
+		Expect(err).To(BeNil())
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodPut,
@@ -240,7 +240,7 @@ var _ = ginkgo.Describe("test route with multiple vars (args, cookie and header)
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("hit the route with right parameters", func() {
+	It("hit the route with right parameters", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -252,7 +252,7 @@ var _ = ginkgo.Describe("test route with multiple vars (args, cookie and header)
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route with wrong arg", func() {
+	It("hit the route with wrong arg", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -263,7 +263,7 @@ var _ = ginkgo.Describe("test route with multiple vars (args, cookie and header)
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route with wrong arg", func() {
+	It("hit the route with wrong arg", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Desc:         "hit the route with wrong header",
 			Object:       base.APISIXExpect(),
@@ -276,7 +276,7 @@ var _ = ginkgo.Describe("test route with multiple vars (args, cookie and header)
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route with wrong cookie", func() {
+	It("hit the route with wrong cookie", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -288,7 +288,7 @@ var _ = ginkgo.Describe("test route with multiple vars (args, cookie and header)
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("delete route", func() {
+	It("delete route", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -298,7 +298,7 @@ var _ = ginkgo.Describe("test route with multiple vars (args, cookie and header)
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit the route just delete", func() {
+	It("hit the route just delete", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -312,8 +312,8 @@ var _ = ginkgo.Describe("test route with multiple vars (args, cookie and header)
 	})
 })
 
-var _ = ginkgo.Describe("test route with vars (args is digital)", func() {
-	ginkgo.It("add route with vars (args is digital)", func() {
+var _ = Describe("test route with vars (args is digital)", func() {
+	It("add route with vars (args is digital)", func() {
 		var createRouteBody map[string]interface{} = map[string]interface{}{
 			"name": "route1",
 			"uri":  "/hello",
@@ -323,7 +323,7 @@ var _ = ginkgo.Describe("test route with vars (args is digital)", func() {
 			"upstream": upstream,
 		}
 		_createRouteBody, err := json.Marshal(createRouteBody)
-		gomega.Expect(err).To(gomega.BeNil())
+		Expect(err).To(BeNil())
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodPut,
@@ -333,7 +333,7 @@ var _ = ginkgo.Describe("test route with vars (args is digital)", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("verify route", func() {
+	It("verify route", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -344,7 +344,7 @@ var _ = ginkgo.Describe("test route with vars (args is digital)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("delete the route with vars (args is digital)", func() {
+	It("delete the route with vars (args is digital)", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -354,7 +354,7 @@ var _ = ginkgo.Describe("test route with vars (args is digital)", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit route just delete", func() {
+	It("hit route just delete", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,

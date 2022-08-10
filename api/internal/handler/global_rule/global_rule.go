@@ -27,10 +27,10 @@ import (
 	"github.com/shiningrush/droplet/wrapper"
 	wgin "github.com/shiningrush/droplet/wrapper/gin"
 
-	"github.com/apisix/manager-api/internal/core/entity"
-	"github.com/apisix/manager-api/internal/core/store"
-	"github.com/apisix/manager-api/internal/handler"
-	"github.com/apisix/manager-api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/core/store"
+	"github.com/apache/apisix-dashboard/api/internal/handler"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
 )
 
 type Handler struct {

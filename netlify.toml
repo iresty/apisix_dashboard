@@ -1,9 +1,0 @@
-[[redirects]]
-  from = "/apisix/*"
-  to = "http://139.217.190.60/apisix/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200

@@ -21,7 +21,7 @@ import (
 	"github.com/shiningrush/droplet"
 	wgin "github.com/shiningrush/droplet/wrapper/gin"
 
-	"github.com/apisix/manager-api/internal/handler"
+	"github.com/apache/apisix-dashboard/api/internal/handler"
 )
 
 type Handler struct {

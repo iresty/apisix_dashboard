@@ -25,9 +25,9 @@ import (
 
 	"github.com/shiningrush/droplet"
 
-	"github.com/apisix/manager-api/internal"
-	"github.com/apisix/manager-api/internal/conf"
-	"github.com/apisix/manager-api/internal/handler"
+	"github.com/apache/apisix-dashboard/api/internal"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/handler"
 )
 
 func (s *server) setupAPI() {

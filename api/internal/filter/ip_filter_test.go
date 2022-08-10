@@ -23,7 +23,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/apisix/manager-api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
 )
 
 func TestIPFilter_Handle(t *testing.T) {

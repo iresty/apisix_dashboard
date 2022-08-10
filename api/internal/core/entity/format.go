@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/apisix/manager-api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/log"
 )
 
 func mapKV2Node(key string, val float64) (*Node, error) {

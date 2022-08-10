@@ -19,17 +19,17 @@ package schema
 import (
 	"net/http"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("Schema Test", func() {
-	table.DescribeTable("test schema basic", func(testCase base.HttpTestCase) {
+var _ = Describe("Schema Test", func() {
+	DescribeTable("test schema basic", func(testCase base.HttpTestCase) {
 		base.RunTestCase(testCase)
 	},
-		table.Entry("get consumer schema of plugin", base.HttpTestCase{
+		Entry("get consumer schema of plugin", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/schema/plugins/jwt-auth",
@@ -39,7 +39,7 @@ var _ = ginkgo.Describe("Schema Test", func() {
 			ExpectBody:   "{\"dependencies\":{\"algorithm\":{\"oneOf\":[{\"properties\":{\"algorithm\":{\"default\":\"HS256\",\"enum\":[\"HS256\",\"HS512\"]}}},{\"properties\":{\"algorithm\":{\"enum\":[\"RS256\"]},\"private_key\":{\"type\":\"string\"},\"public_key\":{\"type\":\"string\"}},\"required\":[\"private_key\",\"public_key\"]},{\"properties\":{\"algorithm\":{\"enum\":[\"RS256\"]},\"vault\":{\"properties\":{},\"type\":\"object\"}},\"required\":[\"vault\"]}]}},\"properties\":{\"algorithm\":{\"default\":\"HS256\",\"enum\":[\"HS256\",\"HS512\",\"RS256\"],\"type\":\"string\"},\"base64_secret\":{\"default\":false,\"type\":\"boolean\"},\"exp\":{\"default\":86400,\"minimum\":1,\"type\":\"integer\"},\"key\":{\"type\":\"string\"},\"secret\":{\"type\":\"string\"},\"vault\":{\"properties\":{},\"type\":\"object\"}},\"required\":[\"key\"],\"type\":\"object\"}",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("get schema of plugin `require-id`", base.HttpTestCase{
+		Entry("get schema of plugin `require-id`", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/schema/plugins/jwt-auth",
@@ -48,7 +48,7 @@ var _ = ginkgo.Describe("Schema Test", func() {
 			ExpectBody:   `{"$comment":"this is a mark for our injected plugin schema","properties":{"cookie":{"default":"jwt","type":"string"},"disable":{"type":"boolean"},"header":{"default":"authorization","type":"string"},"query":{"default":"jwt","type":"string"}}`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("get schema of non-existent plugin", base.HttpTestCase{
+		Entry("get schema of non-existent plugin", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/schema/plugins/non-existent",
@@ -57,7 +57,7 @@ var _ = ginkgo.Describe("Schema Test", func() {
 			ExpectBody:   `schema of plugins non-existent not found`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("get schema of consumer", base.HttpTestCase{
+		Entry("get schema of consumer", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/schemas/consumer",
@@ -66,7 +66,7 @@ var _ = ginkgo.Describe("Schema Test", func() {
 			ExpectBody:   `"properties":{"create_time":{"type":"integer"},"desc":{"maxLength":256,"type":"string"},"labels":{"description":"key/value pairs to specify attributes","patternProperties":{".*":{"description":"value of label","maxLength":64,"minLength":1,"pattern":"^\\S+$","type":"string"}},"type":"object"},"plugins":{"type":"object"},"update_time":{"type":"integer"},"username":{"maxLength":100,"minLength":1,"pattern":"^[a-zA-Z0-9_]+$","type":"string"}}`,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("get schema of non-existent resources", base.HttpTestCase{
+		Entry("get schema of non-existent resources", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/schemas/non-existent",

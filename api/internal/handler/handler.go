@@ -45,9 +45,9 @@ import (
 	"github.com/shiningrush/droplet/data"
 	"github.com/shiningrush/droplet/middleware"
 
-	"github.com/apisix/manager-api/internal/core/entity"
-	"github.com/apisix/manager-api/internal/core/store"
-	"github.com/apisix/manager-api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/core/store"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
 )
 
 type RegisterFactory func() (RouteRegister, error)

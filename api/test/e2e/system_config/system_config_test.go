@@ -22,15 +22,14 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = Describe("system config", func() {
-	DescribeTable("test system config data CURD",
+var _ = Describe("System Config", func() {
+	DescribeTable("Test system config CURD",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-
 		Entry("get system config should get not found error", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
@@ -38,7 +37,6 @@ var _ = Describe("system config", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusNotFound,
 		}),
-
 		Entry("create system config should get schema validate failed error", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPost,
@@ -50,7 +48,6 @@ var _ = Describe("system config", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusBadRequest,
 		}),
-
 		Entry("create system config should success", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPost,
@@ -63,7 +60,6 @@ var _ = Describe("system config", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   "\"config_name\":\"grafana\",\"payload\":{\"url\":\"http://127.0.0.1:3000\"}",
 		}),
-
 		Entry("after create system config get config should succeed", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
@@ -72,7 +68,6 @@ var _ = Describe("system config", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   "\"config_name\":\"grafana\",\"payload\":{\"url\":\"http://127.0.0.1:3000\"}",
 		}),
-
 		Entry("update system config should get schema validate failed error", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
@@ -84,7 +79,6 @@ var _ = Describe("system config", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusBadRequest,
 		}),
-
 		Entry("update system config should success", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
@@ -97,7 +91,6 @@ var _ = Describe("system config", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   "\"config_name\":\"grafana\",\"payload\":{\"url\":\"http://127.0.0.1:2000\"}",
 		}),
-
 		Entry("after update system config get config should succeed", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
@@ -106,7 +99,6 @@ var _ = Describe("system config", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   "\"config_name\":\"grafana\",\"payload\":{\"url\":\"http://127.0.0.1:2000\"}",
 		}),
-
 		Entry("delete system config should success", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -114,7 +106,6 @@ var _ = Describe("system config", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-
 		Entry("get system config should get not found error", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,

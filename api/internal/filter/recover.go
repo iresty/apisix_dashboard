@@ -26,7 +26,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/apisix/manager-api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/log"
 )
 
 var (

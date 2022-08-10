@@ -28,7 +28,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tidwall/gjson"
 
-	"github.com/apisix/manager-api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
 )
 
 const (

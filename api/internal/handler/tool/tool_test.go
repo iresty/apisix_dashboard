@@ -22,7 +22,7 @@ import (
 	"github.com/shiningrush/droplet"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/apisix/manager-api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
 )
 
 func TestTool_Version(t *testing.T) {

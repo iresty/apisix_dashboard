@@ -14,23 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package route
+package route_test
 
 import (
 	"net/http"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("route with methods", func() {
-	table.DescribeTable("test route with methods",
+var _ = Describe("route with methods", func() {
+	DescribeTable("test route with methods",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("add route with invalid method", base.HttpTestCase{
+		Entry("add route with invalid method", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -48,7 +48,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusBadRequest,
 		}),
-		table.Entry("verify route", base.HttpTestCase{
+		Entry("verify route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -56,7 +56,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectStatus: http.StatusNotFound,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("add route with valid method", base.HttpTestCase{
+		Entry("add route with valid method", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -74,7 +74,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route", base.HttpTestCase{
+		Entry("verify route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -83,7 +83,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("update same route path", base.HttpTestCase{
+		Entry("update same route path", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -101,7 +101,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify old route updated", base.HttpTestCase{
+		Entry("verify old route updated", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -109,7 +109,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectStatus: http.StatusNotFound,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify new update applied", base.HttpTestCase{
+		Entry("verify new update applied", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello_",
@@ -118,14 +118,14 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("delete route", base.HttpTestCase{
+		Entry("delete route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("add route with valid methods", base.HttpTestCase{
+		Entry("add route with valid methods", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -143,7 +143,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route by post", base.HttpTestCase{
+		Entry("verify route by post", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodPost,
 			Path:         "/hello",
@@ -153,7 +153,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify route by put", base.HttpTestCase{
+		Entry("verify route by put", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodPut,
 			Path:         "/hello",
@@ -163,7 +163,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify route by get", base.HttpTestCase{
+		Entry("verify route by get", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -172,7 +172,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify route by delete", base.HttpTestCase{
+		Entry("verify route by delete", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/hello",
@@ -181,7 +181,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify route by patch", base.HttpTestCase{
+		Entry("verify route by patch", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodPatch,
 			Path:         "/hello",
@@ -191,7 +191,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("update route methods to GET only", base.HttpTestCase{
+		Entry("update route methods to GET only", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -209,7 +209,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify post method isn't working now", base.HttpTestCase{
+		Entry("verify post method isn't working now", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodPost,
 			Path:         "/hello",
@@ -217,7 +217,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectStatus: http.StatusNotFound,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify PUT method isn't working now", base.HttpTestCase{
+		Entry("verify PUT method isn't working now", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodPut,
 			Path:         "/hello",
@@ -225,7 +225,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectStatus: http.StatusNotFound,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify route by GET only", base.HttpTestCase{
+		Entry("verify route by GET only", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -234,14 +234,14 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("delete route", base.HttpTestCase{
+		Entry("delete route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("add route with lower case methods", base.HttpTestCase{
+		Entry("add route with lower case methods", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -259,7 +259,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusBadRequest,
 		}),
-		table.Entry("verify route", base.HttpTestCase{
+		Entry("verify route", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -267,7 +267,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectStatus: http.StatusNotFound,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("add route with methods GET", base.HttpTestCase{
+		Entry("add route with methods GET", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -285,7 +285,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route by get", base.HttpTestCase{
+		Entry("verify route by get", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -294,7 +294,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify route by post", base.HttpTestCase{
+		Entry("verify route by post", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodPost,
 			Path:         "/hello",
@@ -303,7 +303,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectStatus: http.StatusNotFound,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("update route methods to POST", base.HttpTestCase{
+		Entry("update route methods to POST", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -321,7 +321,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route by get", base.HttpTestCase{
+		Entry("verify route by get", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -329,7 +329,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectStatus: http.StatusNotFound,
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("verify route by post", base.HttpTestCase{
+		Entry("verify route by post", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodPost,
 			Path:         "/hello",
@@ -339,7 +339,7 @@ var _ = ginkgo.Describe("route with methods", func() {
 			ExpectBody:   "hello world",
 			Sleep:        base.SleepTime,
 		}),
-		table.Entry("delete route", base.HttpTestCase{
+		Entry("delete route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",

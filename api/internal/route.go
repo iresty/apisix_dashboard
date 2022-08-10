@@ -25,28 +25,27 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 
-	"github.com/apisix/manager-api/internal/conf"
-	"github.com/apisix/manager-api/internal/filter"
-	"github.com/apisix/manager-api/internal/handler"
-	"github.com/apisix/manager-api/internal/handler/authentication"
-	"github.com/apisix/manager-api/internal/handler/consumer"
-	"github.com/apisix/manager-api/internal/handler/data_loader"
-	"github.com/apisix/manager-api/internal/handler/global_rule"
-	"github.com/apisix/manager-api/internal/handler/healthz"
-	"github.com/apisix/manager-api/internal/handler/label"
-	"github.com/apisix/manager-api/internal/handler/migrate"
-	"github.com/apisix/manager-api/internal/handler/plugin_config"
-	"github.com/apisix/manager-api/internal/handler/proto"
-	"github.com/apisix/manager-api/internal/handler/route"
-	"github.com/apisix/manager-api/internal/handler/schema"
-	"github.com/apisix/manager-api/internal/handler/server_info"
-	"github.com/apisix/manager-api/internal/handler/service"
-	"github.com/apisix/manager-api/internal/handler/ssl"
-	"github.com/apisix/manager-api/internal/handler/stream_route"
-	"github.com/apisix/manager-api/internal/handler/system_config"
-	"github.com/apisix/manager-api/internal/handler/tool"
-	"github.com/apisix/manager-api/internal/handler/upstream"
-	"github.com/apisix/manager-api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/filter"
+	"github.com/apache/apisix-dashboard/api/internal/handler"
+	"github.com/apache/apisix-dashboard/api/internal/handler/authentication"
+	"github.com/apache/apisix-dashboard/api/internal/handler/consumer"
+	"github.com/apache/apisix-dashboard/api/internal/handler/data_loader"
+	"github.com/apache/apisix-dashboard/api/internal/handler/global_rule"
+	"github.com/apache/apisix-dashboard/api/internal/handler/healthz"
+	"github.com/apache/apisix-dashboard/api/internal/handler/label"
+	"github.com/apache/apisix-dashboard/api/internal/handler/plugin_config"
+	"github.com/apache/apisix-dashboard/api/internal/handler/proto"
+	"github.com/apache/apisix-dashboard/api/internal/handler/route"
+	"github.com/apache/apisix-dashboard/api/internal/handler/schema"
+	"github.com/apache/apisix-dashboard/api/internal/handler/server_info"
+	"github.com/apache/apisix-dashboard/api/internal/handler/service"
+	"github.com/apache/apisix-dashboard/api/internal/handler/ssl"
+	"github.com/apache/apisix-dashboard/api/internal/handler/stream_route"
+	"github.com/apache/apisix-dashboard/api/internal/handler/system_config"
+	"github.com/apache/apisix-dashboard/api/internal/handler/tool"
+	"github.com/apache/apisix-dashboard/api/internal/handler/upstream"
+	"github.com/apache/apisix-dashboard/api/internal/log"
 )
 
 func SetUpRouter() *gin.Engine {
@@ -84,7 +83,6 @@ func SetUpRouter() *gin.Engine {
 		data_loader.NewImportHandler,
 		tool.NewHandler,
 		plugin_config.NewHandler,
-		migrate.NewHandler,
 		proto.NewHandler,
 		stream_route.NewHandler,
 		system_config.NewHandler,

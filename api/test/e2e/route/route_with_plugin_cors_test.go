@@ -14,30 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package route
+package route_test
 
 import (
 	"net/http"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("route with plugin cors", func() {
-	table.DescribeTable("test route with plugin cors",
+var _ = Describe("route with plugin cors", func() {
+	DescribeTable("test route with plugin cors",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("make sure the route is not created", base.HttpTestCase{
+		Entry("make sure the route is not created", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
 			ExpectStatus: http.StatusNotFound,
 			ExpectBody:   `{"error_msg":"404 Route Not Found"}`,
 		}),
-		table.Entry("create route with cors default setting", base.HttpTestCase{
+		Entry("create route with cors default setting", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -59,7 +59,7 @@ var _ = ginkgo.Describe("route with plugin cors", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route with cors default setting", base.HttpTestCase{
+		Entry("verify route with cors default setting", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",
@@ -71,7 +71,7 @@ var _ = ginkgo.Describe("route with plugin cors", func() {
 			ExpectBody: "hello world",
 			Sleep:      base.SleepTime,
 		}),
-		table.Entry("update route with specified setting", base.HttpTestCase{
+		Entry("update route with specified setting", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -100,7 +100,7 @@ var _ = ginkgo.Describe("route with plugin cors", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route with cors specified setting", base.HttpTestCase{
+		Entry("verify route with cors specified setting", base.HttpTestCase{
 			Object: base.APISIXExpect(),
 			Method: http.MethodGet,
 			Path:   "/hello",
@@ -119,7 +119,7 @@ var _ = ginkgo.Describe("route with plugin cors", func() {
 			ExpectBody: "hello world",
 			Sleep:      base.SleepTime,
 		}),
-		table.Entry("verify route with cors specified no match origin", base.HttpTestCase{
+		Entry("verify route with cors specified no match origin", base.HttpTestCase{
 			Object: base.APISIXExpect(),
 			Method: http.MethodGet,
 			Path:   "/hello",
@@ -137,7 +137,7 @@ var _ = ginkgo.Describe("route with plugin cors", func() {
 			ExpectBody: "hello world",
 			Sleep:      base.SleepTime,
 		}),
-		table.Entry("verify route with options method", base.HttpTestCase{
+		Entry("verify route with options method", base.HttpTestCase{
 			Object: base.APISIXExpect(),
 			Method: http.MethodOptions,
 			Headers: map[string]string{
@@ -154,7 +154,7 @@ var _ = ginkgo.Describe("route with plugin cors", func() {
 			},
 			ExpectBody: "",
 		}),
-		table.Entry("update route with cors setting force wildcard", base.HttpTestCase{
+		Entry("update route with cors setting force wildcard", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -181,7 +181,7 @@ var _ = ginkgo.Describe("route with plugin cors", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route with cors setting force wildcard", base.HttpTestCase{
+		Entry("verify route with cors setting force wildcard", base.HttpTestCase{
 			Object: base.APISIXExpect(),
 			Method: http.MethodGet,
 			Path:   "/hello",
@@ -204,14 +204,14 @@ var _ = ginkgo.Describe("route with plugin cors", func() {
 			ExpectBody: "hello world",
 			Sleep:      base.SleepTime,
 		}),
-		table.Entry("delete route", base.HttpTestCase{
+		Entry("delete route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("make sure the route deleted", base.HttpTestCase{
+		Entry("make sure the route deleted", base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
 			Path:         "/hello",

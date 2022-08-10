@@ -17,10 +17,10 @@
 package server
 
 import (
-	"github.com/apisix/manager-api/internal/conf"
-	"github.com/apisix/manager-api/internal/core/storage"
-	"github.com/apisix/manager-api/internal/core/store"
-	"github.com/apisix/manager-api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/core/storage"
+	"github.com/apache/apisix-dashboard/api/internal/core/store"
+	"github.com/apache/apisix-dashboard/api/internal/log"
 )
 
 func (s *server) setupStore() error {

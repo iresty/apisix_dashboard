@@ -14,30 +14,171 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package plugin_config
+package plugin_config_test
 
 import (
 	"net/http"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("Plugin Config", func() {
-	table.DescribeTable("test plugin config",
+var _ = Describe("Plugin Config", func() {
+	DescribeTable("Test plugin config CURD",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("make sure the route doesn't exist", base.HttpTestCase{
-			Object:       base.APISIXExpect(),
+		Entry("Get plugin config (Not Exist)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
-			Path:         "/hello",
+			Path:         "/apisix/admin/plugin_configs/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusNotFound,
-			ExpectBody:   `{"error_msg":"404 Route Not Found"}`,
 		}),
-		table.Entry("create plugin config", base.HttpTestCase{
+		Entry("List plugin config (Empty)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/plugin_configs",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"total_size":0`,
+		}),
+		Entry("Create plugin config #1", base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPut,
+			Path:   "/apisix/admin/plugin_configs/1",
+			Body: `{
+				"plugins": {
+					"response-rewrite": {
+						"headers": {
+							"X-VERSION":"1.0"
+						}
+					},
+					"uri-blocker": {
+						"block_rules": ["select.+(from|limit)", "(?:(union(.*?)select))"]
+					}
+				},
+				"labels": {
+					"version": "v1",
+					"build":   "16"
+				}
+			}`,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"X-VERSION":"1.0"`,
+		}),
+		Entry("Get plugin config (Exist)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/plugin_configs/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"X-VERSION":"1.0"`,
+		}),
+		Entry("List plugin config (1 item)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/plugin_configs",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"total_size":1`,
+		}),
+		Entry("Create plugin config #2", base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPut,
+			Path:   "/apisix/admin/plugin_configs/2",
+			Body: `{
+				"id": "2",
+				"plugins": {
+					"response-rewrite": {
+						"headers": {
+							"X-VERSION":"2.0"
+						}
+					}
+				},
+				"labels": {
+					"version": "v2",
+					"build":   "17",
+					"extra":   "test"
+				}
+			}`,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"X-VERSION":"2.0"`,
+		}),
+		Entry("Search plugin config (By Label key:value)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Path:         "/apisix/admin/plugin_configs",
+			Query:        "label=build:16",
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"labels":{"build":"16","version":"v1"}`,
+		}),
+		Entry("Search plugin config (By Label key)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Path:         "/apisix/admin/plugin_configs",
+			Query:        "label=extra",
+			Method:       http.MethodGet,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"labels":{"build":"17","extra":"test","version":"v2"}`,
+		}),
+		Entry("Update plugin config (Full)", base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPut,
+			Path:   "/apisix/admin/plugin_configs/1",
+			Body: `{
+				"plugins": {
+					"response-rewrite": {
+						"headers": {
+							"X-TEST":"1.0"
+						}
+					},
+					"uri-blocker": {
+						"block_rules": ["select.+(from|limit)", "(?:(union(.*?)select))"]
+					}
+				},
+				"labels": {
+					"version": "v1",
+					"build":   "16"
+				}
+			}`,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"X-TEST":"1.0"`,
+		}),
+		Entry("Update plugin config (Partial)", base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPatch,
+			Path:   "/apisix/admin/plugin_configs/1/plugins",
+			Body: `{
+				"response-rewrite": {
+					"headers": {
+						"X-TEST":"2.0"
+					}
+				}
+			}`,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"X-TEST":"2.0"`,
+		}),
+		Entry("Batch Delete plugin config", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodDelete,
+			Path:         "/apisix/admin/plugin_configs/1,2",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+		}),
+	)
+
+	DescribeTable("Test plugin config Integration",
+		func(tc base.HttpTestCase) {
+			base.RunTestCase(tc)
+		},
+		Entry("Create plugin config", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Path:   "/apisix/admin/plugin_configs/1",
 			Method: http.MethodPut,
@@ -60,58 +201,7 @@ var _ = ginkgo.Describe("Plugin Config", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("create plugin config by Post", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Path:   "/apisix/admin/plugin_configs",
-			Method: http.MethodPost,
-			Body: `{
-				"id": "2",
-				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"22.0"
-						}
-					}
-				},
-				"labels": {
-					"version": "v2",
-					"build":   "17",
-					"extra":   "test"
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-		}),
-		table.Entry("get plugin config", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Path:         "/apisix/admin/plugin_configs/1",
-			Method:       http.MethodGet,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"plugins":{"response-rewrite":{"headers":{"X-VERSION":"1.0"}},"uri-blocker":{"block_rules":["select.+(from|limit)","(?:(union(.*?)select))"]}}`,
-			Sleep:        base.SleepTime,
-		}),
-		table.Entry("search plugin_config list by label ", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Path:         "/apisix/admin/plugin_configs",
-			Query:        "label=build:16",
-			Method:       http.MethodGet,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"labels":{"build":"16","version":"v1"}`,
-			Sleep:        base.SleepTime,
-		}),
-		table.Entry("search plugin_config list by label (only key)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Path:         "/apisix/admin/plugin_configs",
-			Query:        "label=extra",
-			Method:       http.MethodGet,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"labels":{"build":"17","extra":"test","version":"v2"}`,
-			Sleep:        base.SleepTime,
-		}),
-		table.Entry("create route with the plugin config created before", base.HttpTestCase{
+		Entry("Create route", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -131,115 +221,35 @@ var _ = ginkgo.Describe("Plugin Config", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("verify route with header", base.HttpTestCase{
+		Entry("Verify (Add Header)", base.HttpTestCase{
 			Object:        base.APISIXExpect(),
 			Method:        http.MethodGet,
 			Path:          "/hello",
 			ExpectStatus:  http.StatusOK,
 			ExpectBody:    "hello world",
 			ExpectHeaders: map[string]string{"X-VERSION": "1.0"},
-			Sleep:         base.SleepTime,
 		}),
-		table.Entry("verify route that should be blocked", base.HttpTestCase{
+		Entry("Verify (URI Block)", base.HttpTestCase{
 			Object:        base.APISIXExpect(),
 			Method:        http.MethodGet,
 			Path:          "/hello",
 			Query:         "name=%3Bselect%20from%20sys",
 			ExpectStatus:  http.StatusForbidden,
 			ExpectHeaders: map[string]string{"X-VERSION": "1.0"},
-			Sleep:         base.SleepTime,
 		}),
-		table.Entry("update plugin config by patch", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Path:   "/apisix/admin/plugin_configs/1",
-			Method: http.MethodPatch,
-			Body: `{
-				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"2.0"
-						}
-					},
-					"uri-blocker": {
-						"block_rules": ["none"]
-					}
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-		}),
-		table.Entry("verify patch update", base.HttpTestCase{
-			Object:        base.APISIXExpect(),
-			Method:        http.MethodGet,
-			Path:          "/hello",
-			ExpectStatus:  http.StatusOK,
-			ExpectBody:    "hello world",
-			ExpectHeaders: map[string]string{"X-VERSION": "2.0"},
-			Sleep:         base.SleepTime,
-		}),
-		table.Entry("verify patch update(should not block)", base.HttpTestCase{
-			Object:        base.APISIXExpect(),
-			Method:        http.MethodGet,
-			Path:          "/hello",
-			Query:         "name=%3Bselect%20from%20sys",
-			ExpectStatus:  http.StatusOK,
-			ExpectBody:    "hello world",
-			ExpectHeaders: map[string]string{"X-VERSION": "2.0"},
-		}),
-		table.Entry("update plugin config by sub path patch", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Path:   "/apisix/admin/plugin_configs/1/plugins",
-			Method: http.MethodPatch,
-			Body: `{
-				"response-rewrite": {
-					"headers": {
-						"X-VERSION":"3.0"
-					}
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-		}),
-		table.Entry("verify patch (sub path)", base.HttpTestCase{
-			Object:        base.APISIXExpect(),
-			Method:        http.MethodGet,
-			Path:          "/hello",
-			ExpectStatus:  http.StatusOK,
-			ExpectBody:    "hello world",
-			ExpectHeaders: map[string]string{"X-VERSION": "3.0"},
-			Sleep:         base.SleepTime,
-		}),
-		table.Entry("delete route", base.HttpTestCase{
+		Entry("Delete route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		table.Entry("delete plugin config", base.HttpTestCase{
+		Entry("Delete plugin config", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/plugin_configs/1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			Sleep:        base.SleepTime,
-		}),
-		table.Entry("make sure the plugin config has been deleted", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/plugin_configs/1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusNotFound,
-			ExpectBody:   `{"code":10001,"message":"data not found"`,
-			Sleep:        base.SleepTime,
-		}),
-		table.Entry("make sure the route has been deleted", base.HttpTestCase{
-			Object:       base.APISIXExpect(),
-			Method:       http.MethodGet,
-			Path:         "/hello",
-			ExpectStatus: http.StatusNotFound,
-			ExpectBody:   `{"error_msg":"404 Route Not Found"}`,
-			Sleep:        base.SleepTime,
 		}),
 	)
 })

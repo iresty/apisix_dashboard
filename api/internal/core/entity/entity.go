@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/apisix/manager-api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
 )
 
 type BaseInfo struct {

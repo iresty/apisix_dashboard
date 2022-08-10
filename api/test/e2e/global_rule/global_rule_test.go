@@ -22,15 +22,30 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 var _ = Describe("Global Rule", func() {
-	var _ = DescribeTable("test global rule curd",
+	DescribeTable("Test global rule CURD",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		Entry("create global rule", base.HttpTestCase{
+		Entry("Get global rule (Not Exist)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/global_rules/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusNotFound,
+		}),
+		Entry("List global rule (Empty)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/global_rules",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"total_size":0`,
+		}),
+		Entry("Create global rule #1", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/global_rules/1",
@@ -45,9 +60,59 @@ var _ = Describe("Global Rule", func() {
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"X-VERSION\":\"1.0\"",
+			ExpectBody:   `"X-VERSION":"1.0"`,
 		}),
-		Entry("full update global rule", base.HttpTestCase{
+		Entry("Get global rule (Exist)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/global_rules/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"X-VERSION":"1.0"`,
+		}),
+		Entry("List global rule (1 item)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/global_rules",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"total_size":1`,
+		}),
+		Entry("Create global rule #2", base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPut,
+			Path:   "/apisix/admin/global_rules/2",
+			Body: `{
+				"plugins": {
+					"response-rewrite": {
+						"headers": {
+							"X-VERSION":"2.0"
+						}
+					}
+				}
+			}`,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"X-VERSION":"2.0"`,
+		}),
+		Entry("List global rule (2 item)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/global_rules",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"total_size":2`,
+		}),
+		Entry("List global rule (Paginate)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/global_rules",
+			Query:        "page=2&page_size=1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"id":"2"`,
+		}),
+		Entry("Update global rule (Full)", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/global_rules/1",
@@ -64,7 +129,7 @@ var _ = Describe("Global Rule", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   "\"X-TEST\":\"1.0\"",
 		}),
-		Entry("partial update global rule", base.HttpTestCase{
+		Entry("Update global rule (Partial)", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPatch,
 			Path:   "/apisix/admin/global_rules/1/plugins",
@@ -80,7 +145,7 @@ var _ = Describe("Global Rule", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   "\"key-auth\":{}",
 		}),
-		Entry("delete global rule", base.HttpTestCase{
+		Entry("Delete global rule", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/global_rules/1",
@@ -89,11 +154,11 @@ var _ = Describe("Global Rule", func() {
 		}),
 	)
 
-	var _ = DescribeTable("test global rule integration",
+	DescribeTable("Test global rule Integration",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		Entry("create route", base.HttpTestCase{
+		Entry("Create route", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -112,7 +177,7 @@ var _ = Describe("Global Rule", func() {
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		Entry("create global rule", base.HttpTestCase{
+		Entry("Create global rule", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/global_rules/1",
@@ -132,7 +197,7 @@ var _ = Describe("Global Rule", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   "\"X-VERSION\":\"1.0\"",
 		}),
-		Entry("verify route with header", base.HttpTestCase{
+		Entry("Verify route with header", base.HttpTestCase{
 			Object:        base.APISIXExpect(),
 			Method:        http.MethodGet,
 			Path:          "/hello",
@@ -140,7 +205,7 @@ var _ = Describe("Global Rule", func() {
 			ExpectBody:    "hello world",
 			ExpectHeaders: map[string]string{"X-VERSION": "1.0"},
 		}),
-		Entry("verify route that should be blocked", base.HttpTestCase{
+		Entry("Verify route that should be blocked", base.HttpTestCase{
 			Object:        base.APISIXExpect(),
 			Method:        http.MethodGet,
 			Path:          "/hello",
@@ -148,7 +213,7 @@ var _ = Describe("Global Rule", func() {
 			ExpectStatus:  http.StatusForbidden,
 			ExpectHeaders: map[string]string{"X-VERSION": "1.0"},
 		}),
-		Entry("update route with same plugin response-rewrite", base.HttpTestCase{
+		Entry("Update route with same plugin response-rewrite", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/routes/r1",
@@ -175,7 +240,7 @@ var _ = Describe("Global Rule", func() {
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   "\"X-VERSION\":\"2.0\"",
 		}),
-		Entry("verify route that header should override", base.HttpTestCase{
+		Entry("Verify route that header should override", base.HttpTestCase{
 			Object:        base.APISIXExpect(),
 			Method:        http.MethodGet,
 			Path:          "/hello",
@@ -183,14 +248,14 @@ var _ = Describe("Global Rule", func() {
 			ExpectBody:    "hello world",
 			ExpectHeaders: map[string]string{"X-VERSION": "2.0"},
 		}),
-		Entry("delete global rule", base.HttpTestCase{
+		Entry("Delete global rule", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/global_rules/1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		Entry("delete route", base.HttpTestCase{
+		Entry("Delete route", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/routes/r1",

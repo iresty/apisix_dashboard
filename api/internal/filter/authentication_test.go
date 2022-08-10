@@ -25,7 +25,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/apisix/manager-api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
 )
 
 func genToken(username string, issueAt, expireAt int64) string {

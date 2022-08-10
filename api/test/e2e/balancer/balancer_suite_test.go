@@ -22,7 +22,7 @@ import (
 
 	"github.com/onsi/ginkgo"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 func TestAuth(t *testing.T) {

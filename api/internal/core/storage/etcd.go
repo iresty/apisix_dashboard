@@ -19,15 +19,16 @@ package storage
 import (
 	"context"
 	"fmt"
+	"github.com/apache/apisix-dashboard/api/pkg/storage"
 	"time"
 
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/pkg/transport"
 
-	"github.com/apisix/manager-api/internal/conf"
-	"github.com/apisix/manager-api/internal/log"
-	"github.com/apisix/manager-api/internal/utils"
-	"github.com/apisix/manager-api/internal/utils/runtime"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/utils"
+	"github.com/apache/apisix-dashboard/api/internal/utils/runtime"
 )
 
 const (
@@ -141,13 +142,13 @@ func (s *EtcdV3Storage) Get(ctx context.Context, key string) (string, error) {
 	return string(resp.Kvs[0].Value), nil
 }
 
-func (s *EtcdV3Storage) List(ctx context.Context, key string) ([]Keypair, error) {
+func (s *EtcdV3Storage) List(ctx context.Context, key string) ([]storage_api.Keypair, error) {
 	resp, err := s.client.Get(ctx, key, clientv3.WithPrefix())
 	if err != nil {
 		log.Errorf("etcd get failed: %s", err)
 		return nil, fmt.Errorf("etcd get failed: %s", err)
 	}
-	var ret []Keypair
+	var ret []storage_api.Keypair
 	for i := range resp.Kvs {
 		key := string(resp.Kvs[i].Key)
 		value := string(resp.Kvs[i].Value)
@@ -161,7 +162,7 @@ func (s *EtcdV3Storage) List(ctx context.Context, key string) ([]Keypair, error)
 			continue
 		}
 
-		data := Keypair{
+		data := storage_api.Keypair{
 			Key:   key,
 			Value: value,
 		}
@@ -204,13 +205,13 @@ func (s *EtcdV3Storage) BatchDelete(ctx context.Context, keys []string) error {
 	return nil
 }
 
-func (s *EtcdV3Storage) Watch(ctx context.Context, key string) <-chan WatchResponse {
+func (s *EtcdV3Storage) Watch(ctx context.Context, key string) <-chan storage_api.WatchResponse {
 	eventChan := s.client.Watch(ctx, key, clientv3.WithPrefix())
-	ch := make(chan WatchResponse, 1)
+	ch := make(chan storage_api.WatchResponse, 1)
 	go func() {
 		defer runtime.HandlePanic()
 		for event := range eventChan {
-			output := WatchResponse{
+			output := storage_api.WatchResponse{
 				Canceled: event.Canceled,
 			}
 
@@ -227,17 +228,17 @@ func (s *EtcdV3Storage) Watch(ctx context.Context, key string) <-chan WatchRespo
 					continue
 				}
 
-				e := Event{
-					Keypair: Keypair{
+				e := storage_api.Event{
+					Keypair: storage_api.Keypair{
 						Key:   key,
 						Value: value,
 					},
 				}
 				switch event.Events[i].Type {
 				case clientv3.EventTypePut:
-					e.Type = EventTypePut
+					e.Type = storage_api.EventTypePut
 				case clientv3.EventTypeDelete:
-					e.Type = EventTypeDelete
+					e.Type = storage_api.EventTypeDelete
 				}
 				output.Events = append(output.Events, e)
 			}

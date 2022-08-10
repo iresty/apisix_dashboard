@@ -30,10 +30,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/apisix/manager-api/internal/core/entity"
-	"github.com/apisix/manager-api/internal/core/store"
-	"github.com/apisix/manager-api/internal/log"
-	"github.com/apisix/manager-api/internal/utils/consts"
+	"github.com/apache/apisix-dashboard/api/internal/core/entity"
+	"github.com/apache/apisix-dashboard/api/internal/core/store"
+	"github.com/apache/apisix-dashboard/api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/utils/consts"
 )
 
 var resources = map[string]string{

@@ -15,11 +15,13 @@ on:
   push:
     branches:
       - master
+      - next
     paths-ignore:
       - 'docs/**'
   pull_request:
     branches:
       - master
+      - next
     paths-ignore:
       - 'docs/**'
   schedule:

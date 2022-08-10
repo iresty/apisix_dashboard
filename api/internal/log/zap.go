@@ -23,7 +23,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/apisix/manager-api/internal/conf"
+	"github.com/apache/apisix-dashboard/api/internal/conf"
 )
 
 var logger *zap.SugaredLogger

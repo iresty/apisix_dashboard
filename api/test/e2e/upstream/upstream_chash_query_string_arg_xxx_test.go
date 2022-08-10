@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package upstream
+package upstream_test
 
 import (
 	"encoding/json"
@@ -24,10 +24,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 var createUpstreamBody map[string]interface{} = map[string]interface{}{
@@ -51,11 +51,11 @@ var createUpstreamBody map[string]interface{} = map[string]interface{}{
 	"type": "chash",
 }
 
-var _ = ginkgo.Describe("Upstream chash query string", func() {
-	ginkgo.It("create chash upstream with key (query_string)", func() {
+var _ = Describe("Upstream chash query string", func() {
+	It("create chash upstream with key (query_string)", func() {
 		createUpstreamBody["key"] = "query_string"
 		_createUpstreamBody, err := json.Marshal(createUpstreamBody)
-		gomega.Expect(err).To(gomega.BeNil())
+		Expect(err).To(BeNil())
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodPut,
@@ -66,7 +66,7 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			ExpectBody:   []string{"\"id\":\"1\"", "\"key\":\"query_string\""},
 		})
 	})
-	ginkgo.It("create route using the upstream just created", func() {
+	It("create route using the upstream just created", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
@@ -81,19 +81,19 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit routes(upstream query_string)", func() {
+	It("hit routes(upstream query_string)", func() {
 		time.Sleep(time.Duration(500) * time.Millisecond)
 		basepath := base.APISIXHost
 		res := map[string]int{}
 		for i := 0; i < 180; i++ {
 			url := basepath + "/server_port?var=2&var2=" + strconv.Itoa(i)
 			req, err := http.NewRequest("GET", url, nil)
-			gomega.Expect(err).To(gomega.BeNil())
+			Expect(err).To(BeNil())
 			resp, err := http.DefaultClient.Do(req)
-			gomega.Expect(err).To(gomega.BeNil())
+			Expect(err).To(BeNil())
 			defer resp.Body.Close()
 			respBody, err := ioutil.ReadAll(resp.Body)
-			gomega.Expect(err).To(gomega.BeNil())
+			Expect(err).To(BeNil())
 			body := string(respBody)
 			if _, ok := res[body]; !ok {
 				res[body] = 1
@@ -106,9 +106,9 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			counts = append(counts, value)
 		}
 		sort.Ints(counts)
-		gomega.Expect(float64(counts[2]-counts[0]) / float64(counts[1])).Should(gomega.BeNumerically("<", 0.4))
+		Expect(float64(counts[2]-counts[0]) / float64(counts[1])).Should(BeNumerically("<", 0.4))
 	})
-	ginkgo.It("delete route", func() {
+	It("delete route", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -117,7 +117,7 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("delete upstream", func() {
+	It("delete upstream", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -126,7 +126,7 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("hit the route just deleted", func() {
+	It("hit the route just deleted", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,
@@ -138,11 +138,11 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 	})
 })
 
-var _ = ginkgo.Describe("Upstream chash query string", func() {
-	ginkgo.It("create chash upstream with key (arg_xxx)", func() {
+var _ = Describe("Upstream chash query string", func() {
+	It("create chash upstream with key (arg_xxx)", func() {
 		createUpstreamBody["key"] = "arg_device_id"
 		_createUpstreamBody, err := json.Marshal(createUpstreamBody)
-		gomega.Expect(err).To(gomega.BeNil())
+		Expect(err).To(BeNil())
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodPut,
@@ -153,7 +153,7 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			ExpectBody:   []string{"\"id\":\"1\"", "\"key\":\"arg_device_id\""},
 		})
 	})
-	ginkgo.It("create route using the upstream just created", func() {
+	It("create route using the upstream just created", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
@@ -168,19 +168,19 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			Sleep:        base.SleepTime,
 		})
 	})
-	ginkgo.It("hit routes(upstream arg_device_id)", func() {
+	It("hit routes(upstream arg_device_id)", func() {
 		time.Sleep(time.Duration(500) * time.Millisecond)
 		basepath := base.APISIXHost
 		res := map[string]int{}
 		for i := 0; i <= 17; i++ {
 			url := basepath + "/server_port?device_id=" + strconv.Itoa(i)
 			req, err := http.NewRequest("GET", url, nil)
-			gomega.Expect(err).To(gomega.BeNil())
+			Expect(err).To(BeNil())
 			resp, err := http.DefaultClient.Do(req)
-			gomega.Expect(err).To(gomega.BeNil())
+			Expect(err).To(BeNil())
 			defer resp.Body.Close()
 			respBody, err := ioutil.ReadAll(resp.Body)
-			gomega.Expect(err).To(gomega.BeNil())
+			Expect(err).To(BeNil())
 			body := string(respBody)
 			if _, ok := res[body]; !ok {
 				res[body] = 1
@@ -193,9 +193,9 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			counts = append(counts, value)
 		}
 		sort.Ints(counts)
-		gomega.Expect(float64(counts[2]-counts[0]) / float64(counts[1])).Should(gomega.BeNumerically("<", 0.4))
+		Expect(float64(counts[2]-counts[0]) / float64(counts[1])).Should(BeNumerically("<", 0.4))
 	})
-	ginkgo.It("delete route", func() {
+	It("delete route", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -204,7 +204,7 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("delete upstream", func() {
+	It("delete upstream", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
@@ -213,7 +213,7 @@ var _ = ginkgo.Describe("Upstream chash query string", func() {
 			ExpectStatus: http.StatusOK,
 		})
 	})
-	ginkgo.It("hit the route just deleted", func() {
+	It("hit the route just deleted", func() {
 		base.RunTestCase(base.HttpTestCase{
 			Object:       base.APISIXExpect(),
 			Method:       http.MethodGet,

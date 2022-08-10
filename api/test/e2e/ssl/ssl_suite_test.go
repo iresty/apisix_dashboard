@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ssl
+package ssl_test
 
 import (
 	"testing"
@@ -23,7 +23,7 @@ import (
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 func TestSSL(t *testing.T) {
@@ -33,5 +33,6 @@ func TestSSL(t *testing.T) {
 
 var _ = ginkgo.AfterSuite(func() {
 	base.CleanResource("ssl")
+	base.CleanResource("routes")
 	time.Sleep(base.SleepTime)
 })

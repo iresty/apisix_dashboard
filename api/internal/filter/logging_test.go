@@ -24,7 +24,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/apisix/manager-api/internal/log"
+	"github.com/apache/apisix-dashboard/api/internal/log"
 )
 
 func performRequest(r http.Handler, method, path string, headers map[string]string) *httptest.ResponseRecorder {

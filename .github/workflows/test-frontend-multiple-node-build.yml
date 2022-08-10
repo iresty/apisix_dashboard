@@ -8,9 +8,11 @@ on:
   push:
     branches:
       - master
+      - next
   pull_request:
     branches:
       - master
+      - next
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/master' && github.run_number || github.ref }}

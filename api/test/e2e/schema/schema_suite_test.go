@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package schema
+package schema_test
 
 import (
 	"testing"
 
-	"github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo"
 )
 
 func TestSchema(t *testing.T) {
-	ginkgo.RunSpecs(t, "schema suite")
+	RunSpecs(t, "Schema Suite")
 }

@@ -14,114 +14,108 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package server_info
+package server_info_test
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/extensions/table"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = ginkgo.Describe("server info test", func() {
-	table.DescribeTable("get server info",
+var _ = Describe("Server Info Test", func() {
+	DescribeTable("Get server info",
 		func(tc base.HttpTestCase) {
-			time.Sleep(2 * time.Second)
 			base.RunTestCase(tc)
 		},
-		table.Entry("get server info(apisix-server1)", base.HttpTestCase{
+		Entry("Get server info (apisix-server1)", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/server_info/apisix-server1",
 			Method:       http.MethodGet,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"hostname\":\"apisix_server1\"",
+			ExpectBody:   `"hostname":"apisix_server1"`,
 		}),
-		table.Entry("get server info(apisix-server2)", base.HttpTestCase{
+		Entry("Get server info (apisix-server2)", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/server_info/apisix-server2",
 			Method:       http.MethodGet,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"hostname\":\"apisix_server2\"",
+			ExpectBody:   `"hostname":"apisix_server2"`,
 		}),
 	)
 
-	table.DescribeTable("get server info list",
+	DescribeTable("List server info",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("list all server info", base.HttpTestCase{
+		Entry("List all server info", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/server_info",
 			Method:       http.MethodGet,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"total_size\":2",
+			ExpectBody:   `"total_size":2`,
 		}),
-		table.Entry("list server info with hostname", base.HttpTestCase{
+		Entry("List server info (With condition, hostname = apisix_)", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/server_info",
 			Query:        "hostname=apisix_",
 			Method:       http.MethodGet,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"total_size\":2",
+			ExpectBody:   `"total_size":2`,
 		}),
-		table.Entry("list server info with hostname", base.HttpTestCase{
+		Entry("List server info (With condition, hostname = apisix_server2)", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/server_info",
 			Query:        "hostname=apisix_server2",
 			Method:       http.MethodGet,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"total_size\":1",
+			ExpectBody:   `"total_size":1`,
 		}),
 	)
-})
 
-var _ = ginkgo.Describe("server info test omitEmptyValue", func() {
-	table.DescribeTable("server info get omitEmptyValue",
+	DescribeTable("Get server info (Omit Empty Value)",
 		func(tc base.HttpTestCase) {
-			time.Sleep(2 * time.Second)
 			base.RunTestCase(tc)
 		},
-		table.Entry("get server info", base.HttpTestCase{
+		Entry("get server info", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/server_info/apisix-server1",
 			Method:       http.MethodGet,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			UnexpectBody: []string{"\"create_time\":", "\"update_time\":"},
+			UnexpectBody: []string{`"create_time":`, `"update_time":`},
 		}),
 	)
 
-	table.DescribeTable("server info list omitEmptyValue",
+	DescribeTable("List server info (Omit Empty Value)",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		table.Entry("list all server info", base.HttpTestCase{
+		Entry("List all server info", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/server_info",
 			Method:       http.MethodGet,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"total_size\":2",
-			UnexpectBody: []string{"\"create_time\":", "\"update_time\":"},
+			ExpectBody:   `"total_size":2`,
+			UnexpectBody: []string{`"create_time":`, `"update_time":`},
 		}),
-		table.Entry("list server info with hostname", base.HttpTestCase{
+		Entry("List server info (With condition, hostname = apisix_)", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Path:         "/apisix/admin/server_info",
 			Query:        "hostname=apisix_",
 			Method:       http.MethodGet,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"total_size\":2",
-			UnexpectBody: []string{"\"create_time\":", "\"update_time\":"},
+			ExpectBody:   `"total_size":2`,
+			UnexpectBody: []string{`"create_time":`, `"update_time":`},
 		}),
 	)
-
 })

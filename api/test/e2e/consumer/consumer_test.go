@@ -22,15 +22,30 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 
-	"github.com/apisix/manager-api/test/e2e/base"
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
 var _ = Describe("Consumer", func() {
-	DescribeTable("test consumer curd",
+	DescribeTable("Test consumer CURD",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		Entry("create consumer", base.HttpTestCase{
+		Entry("Get consumer (Not Exist)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/consumers/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusNotFound,
+		}),
+		Entry("List consumer (Empty)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/consumers",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"total_size":0`,
+		}),
+		Entry("Create consumer #1", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/consumers",
@@ -44,22 +59,66 @@ var _ = Describe("Consumer", func() {
 						"key": "remote_addr",
 						"policy": "local"
 					}
-				},
-				"desc": "test description"
+				}
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   []string{"\"code\":0", "\"username\":\"consumer_1\""},
+			ExpectBody:   `"username":"consumer_1"`,
 		}),
-		Entry("get consumer #1", base.HttpTestCase{
+		Entry("Get consumer (Exist)", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/consumers/consumer_1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"username\":\"consumer_1\"",
+			ExpectBody:   `"username":"consumer_1"`,
 		}),
-		Entry("update consumer", base.HttpTestCase{
+		Entry("List consumer (1 item)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/consumers",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"total_size":1`,
+		}),
+		Entry("Create consumer #2", base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPut,
+			Path:   "/apisix/admin/consumers",
+			Body: `{
+				"username": "consumer_2",
+				"plugins": {
+					"limit-count": {
+						"count": 2,
+						"time_window": 60,
+						"rejected_code": 503,
+						"key": "remote_addr",
+						"policy": "local"
+					}
+				}
+			}`,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"username":"consumer_2"`,
+		}),
+		Entry("List consumer (2 items)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/consumers",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"total_size":2`,
+		}),
+		Entry("List consumer (Paginate)", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/consumers",
+			Query:        "page=2&page_size=1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   `"username":"consumer_2"`,
+		}),
+		Entry("Update consumer", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/consumers/consumer_1",
@@ -73,36 +132,27 @@ var _ = Describe("Consumer", func() {
 						"key": "remote_addr",
 						"policy": "local"
 					}
-				},
-				"desc": "test description"
+				}
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   []string{"\"code\":0", "\"username\":\"consumer_1\"", "\"rejected_code\":504"},
+			ExpectBody:   []string{`"code":0`, `"username":"consumer_1"`, `"rejected_code":504`},
 		}),
-		Entry("get consumer #2", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/consumers/consumer_1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"rejected_code\":504",
-		}),
-		Entry("delete consumer", base.HttpTestCase{
+		Entry("Batch Delete consumer", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
-			Path:         "/apisix/admin/consumers/consumer_1",
+			Path:         "/apisix/admin/consumers/consumer_1,consumer_2",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"code\":0",
+			ExpectBody:   `"code":0`,
 		}),
 	)
 
-	DescribeTable("test consumer curd exception",
+	DescribeTable("Test consumer CURD Exception",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		Entry("create consumer by POST method", base.HttpTestCase{
+		Entry("Create consumer (POST method)", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPost,
 			Path:   "/apisix/admin/consumers",
@@ -123,7 +173,7 @@ var _ = Describe("Consumer", func() {
 			ExpectStatus: http.StatusNotFound,
 			ExpectBody:   "404 page not found",
 		}),
-		Entry("create consumer with not exist plugin", base.HttpTestCase{
+		Entry("Create consumer (Not Exist Plugin)", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/consumers",
@@ -140,7 +190,7 @@ var _ = Describe("Consumer", func() {
 			ExpectStatus: http.StatusBadRequest,
 			ExpectBody:   "schema validate failed: schema not found, path: plugins.key-authnotexist",
 		}),
-		Entry("delete consumer (as delete not exist consumer)", base.HttpTestCase{
+		Entry("Delete consumer (as delete not exist consumer)", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodDelete,
 			Path:         "/apisix/admin/consumers/test",
