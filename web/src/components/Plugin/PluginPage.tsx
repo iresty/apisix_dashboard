@@ -22,7 +22,8 @@ import { useIntl } from 'umi';
 import PanelSection from '@/components/PanelSection';
 import PluginDetail from './PluginDetail';
 import { fetchList, fetchPluginTemplateList } from './service';
-import { PLUGIN_ICON_LIST, PLUGIN_FILTER_LIST } from './data';
+import type { PluginItem } from './data';
+import { PLUGIN_ICON_LIST, PLUGIN_FILTER_LIST, PluginState } from './data';
 import defaultPluginImg from '../../../public/static/default-plugin.png';
 
 type Props = {
@@ -61,17 +62,15 @@ const PluginPage: React.FC<Props> = ({
 }) => {
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
-  const [pluginList, setPluginList] = useState<PluginComponent.Meta[]>([]);
+  const [pluginList, setPluginList] = useState<PluginItem[]>([]);
   const [pluginTemplateList, setPluginTemplateList] = useState<PluginTemplateModule.ResEntity[]>(
     [],
   );
   const [name, setName] = useState<string>(NEVER_EXIST_PLUGIN_FLAG);
   const [typeList, setTypeList] = useState<string[]>([]);
   const [plugins, setPlugins] = useState({});
-
   useEffect(() => {
-    setPlugins(initialData);
-    fetchList().then((data) => {
+    fetchList({ enablePluginList: initialData }).then((data) => {
       const filteredData = data.filter(
         (item) =>
           !(
@@ -87,6 +86,10 @@ const PluginPage: React.FC<Props> = ({
       });
       setTypeList(categoryList);
     });
+  }, [initialData, referPage]);
+
+  useEffect(() => {
+    setPlugins(initialData);
     fetchPluginTemplateList().then((data) => {
       setPluginTemplateList(data);
       form.setFieldsValue({ plugin_config_id });
@@ -200,24 +203,21 @@ const PluginPage: React.FC<Props> = ({
                     ? (item) => item.type === typeItem && !item.hidden && initialData[item.name]
                     : (item) => item.type === typeItem && !item.hidden,
                 ),
-                'name',
-                'asc',
+                ['state', 'name'],
+                ['desc', 'asc'],
               ).map((item) => (
                 <Card
                   key={item.name}
                   actions={[
                     <Button
-                      type={
-                        initialData[item.name] && !initialData[item.name].disable
-                          ? 'primary'
-                          : 'default'
-                      }
-                      danger={initialData[item.name] && !initialData[item.name].disable}
+                      type={item.state ? 'primary' : 'default'}
+                      danger={item.state === PluginState.enable}
+                      data-cy-plugin-state={item.state}
                       onClick={() => {
                         setName(item.name);
                       }}
                     >
-                      {initialData[item.name] && !initialData[item.name].disable
+                      {item.state === PluginState.enable
                         ? formatMessage({ id: 'component.plugin.disable' })
                         : formatMessage({ id: 'component.plugin.enable' })}
                     </Button>,

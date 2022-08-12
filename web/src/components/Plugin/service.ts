@@ -17,7 +17,8 @@
 import { omit } from 'lodash';
 import { request } from 'umi';
 
-import { PLUGIN_LIST, PluginType } from './data';
+import type { PluginItem } from './data';
+import { PLUGIN_LIST, PluginType, PluginState } from './data';
 
 const cached: {
   list: PluginComponent.Meta[];
@@ -25,31 +26,40 @@ const cached: {
   list: [],
 };
 
-export const fetchList = () => {
+export const fetchList = async ({ enablePluginList = {} } = {}) => {
+  let res: PluginItem[];
   if (cached.list.length) {
-    return Promise.resolve(cached.list);
-  }
+    res = cached.list;
+  } else {
+    res = await request<Res<PluginComponent.Meta[]>>('/plugins?all=true').then((data) => {
+      const typedData = data.data.map((item) => ({
+        ...item,
+        type: PLUGIN_LIST[item.name]?.type || 'other',
+        originType: item.type,
+        hidden: PLUGIN_LIST[item.name]?.hidden || false,
+      }));
 
-  return request<Res<PluginComponent.Meta[]>>('/plugins?all=true').then((data) => {
-    const typedData = data.data.map((item) => ({
-      ...item,
-      type: PLUGIN_LIST[item.name]?.type || 'other',
-      originType: item.type,
-      hidden: PLUGIN_LIST[item.name]?.hidden || false,
-    }));
+      let finalList: PluginComponent.Meta[] = [];
 
-    let finalList: PluginComponent.Meta[] = [];
+      Object.values(PluginType).forEach((type) => {
+        finalList = finalList.concat(typedData.filter((item) => item.type === type));
+      });
 
-    Object.values(PluginType).forEach((type) => {
-      finalList = finalList.concat(typedData.filter((item) => item.type === type));
+      if (cached.list.length === 0) {
+        cached.list = finalList;
+      }
+
+      return finalList;
     });
-
-    if (cached.list.length === 0) {
-      cached.list = finalList;
-    }
-
-    return finalList;
+  }
+  res.map((item) => {
+    const isEnable = enablePluginList[item.name]?.disable === false;
+    // eslint-disable-next-line no-param-reassign
+    item.state = isEnable ? PluginState.enable : PluginState.disable;
+    return item;
   });
+
+  return Promise.resolve(res);
 };
 
 /**

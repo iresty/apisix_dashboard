@@ -74,6 +74,15 @@ export enum PluginType {
   other = 'other',
 }
 
+export enum PluginState {
+  disable = 10,
+  enable = 20,
+}
+
+export interface PluginItem extends PluginComponent.Meta {
+  state?: PluginState;
+}
+
 /**
  * Plugin List that contains type field
  */
