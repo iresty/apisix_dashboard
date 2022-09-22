@@ -164,4 +164,10 @@ export default {
   'component.pluginForm.limit-count.redis_cluster_name.tooltip':
     'When using redis-cluster policy, this property is the name of Redis cluster service nodes.',
   'component.pluginForm.limit-count.atLeast2Characters.rule': 'Please enter at least 2 characters',
+  // authz-casbin
+  'component.pluginForm.authz-casbin.model_path.tooltip':'The path of the Casbin model configuration file.',
+  'component.pluginForm.authz-casbin.policy_path.tooltip': 'The path of the Casbin model configuration file.',
+  'componentt.pluginForm.authz-casbin.model.tooltip':'The Casbin model configuration in text format.',
+  'component.pluginForm.authz-casbin.policy.tooltip': 'The Casbin model configuration in text format.',
+  'component.pluginForm.authz-casbin.username.tooltip': 'The header you will be using in request to pass the username (subject).',
 };

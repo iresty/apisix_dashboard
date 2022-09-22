@@ -153,4 +153,10 @@ export default {
   'component.pluginForm.limit-count.redis_cluster_name.tooltip':
     '当使用 redis-cluster 限速策略时，该属性是 Redis 集群服务节点的名称。',
   'component.pluginForm.limit-count.atLeast2Characters.rule': '请至少输入 2 个字符',
+  // authz-casbin
+  'component.pauginForm.authz-casbin.model_path.tooltip':'Casbin 鉴权模型配置文件路径',
+  'compoenet.pauginForm.authz-casbin.policy_path.tooltip': 'Casbin 鉴权策略配置文件路径',
+  'compoenet.pauginForm.authz-casbin.model.tooltip':'Casbin 鉴权模型的文本定义',
+  'compoenet.pauginForm.authz-casbin.policy.tooltip': 'Casbin 鉴权策略的文本定义',
+  'compoenet.pauginForm.authz-casbin.username.tooltip': '描述请求中有可以通过访问控制的用户名',
 };
