@@ -37,18 +37,23 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-          cache-dependency-path: web/yarn.lock
+
+      - name: Setup PNPM environment
+        run: npm i -g pnpm@6.32.11
+
+      - name: Change the NPM Settings for PNPM
+        run: npm config set strict-peer-dependencies=false
+      - run: npm config set auto-install-peers=true
 
       # Install dependencies
       - name: Install dependencies
         working-directory: web
-        run: CYPRESS_INSTALL_BINARY=0 yarn
+        run: CYPRESS_INSTALL_BINARY=0 pnpm install --unsafe-perm
 
       - name: Lint
         working-directory: web
-        run: yarn run lint:js && yarn run lint:style
+        run: pnpm lint:js && pnpm lint:style
 
       - name: Build the Dashboard
         working-directory: web
-        run: yarn build
+        run: pnpm build

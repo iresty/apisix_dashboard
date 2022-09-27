@@ -18,6 +18,7 @@
 SHELL := /bin/bash -o pipefail
 UNAME ?= $(shell uname)
 YARN_EXEC ?= $(shell which yarn)
+PNPM_EXEC ?= $(shell which pnpm)
 GO_EXEC ?= $(shell which go)
 
 VERSION ?= latest
@@ -36,13 +37,13 @@ help:
 ### build:		Build the Apache APISIX Dashboard, including web and manager-api
 .PHONY: build
 build: web-default api-default
-	api/build.sh && cd ./web && export CYPRESS_INSTALL_BINARY=0  && yarn install --ignore-scripts && yarn build  && mkdir -p ../output/logs
+	api/build.sh && cd ./web && export CYPRESS_INSTALL_BINARY=0  && pnpm install --unsafe-perm --ignore-scripts && pnpm build  && mkdir -p ../output/logs
 
 
 .PHONY: web-default
 web-default:
-ifeq ("$(wildcard $(YARN_EXEC))", "")
-	@echo "ERROR: Need to install yarn first"
+ifeq ("$(wildcard $(PNPM_EXEC))", "")
+	@echo "ERROR: Need to install pnpm first"
 	exit 1
 endif
 
@@ -121,12 +122,16 @@ release-src:
 	--exclude release \
 	--exclude api/internal/core/store/validate_mock.go \
 	--exclude api/internal/core/storage/storage_mock.go \
-	.
+	 ./api \
+         ./licenses \
+	 ./web \
+	 LICENSE \
+	 Makefile \
+	 NOTICE \
+	 *.md
 
-	gpg --batch --yes --armor --detach-sig $(RELEASE_SRC).tgz
 	shasum -a 512 $(RELEASE_SRC).tgz > $(RELEASE_SRC).tgz.sha512
 
 	mkdir -p release
 	mv $(RELEASE_SRC).tgz release/$(RELEASE_SRC).tgz
-	mv $(RELEASE_SRC).tgz.asc release/$(RELEASE_SRC).tgz.asc
 	mv $(RELEASE_SRC).tgz.sha512 release/$(RELEASE_SRC).tgz.sha512

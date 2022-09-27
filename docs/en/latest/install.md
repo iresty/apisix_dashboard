@@ -86,7 +86,7 @@ $ go env -w GOPROXY=https://goproxy.cn,direct
 For `web`:
 
 1. [Node.js](https://nodejs.org/en/download/) current LTS (14.x+)
-2. [Yarn](https://yarnpkg.com/getting-started/install)
+2. [Pnpm](https://pnpm.io/installation)
 
 ### Download {#source-download}
 

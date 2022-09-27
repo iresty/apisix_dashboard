@@ -81,14 +81,24 @@ If you don't want to create the file, you can also export the variable.
 export SERVE_URL_DEV=http://localhost:9000
 ```
 
-3. Launch development mode
+3. Launch development mode [(pnpm)](https://pnpm.io/installation)
 
-```sh
-$ yarn install
+```shell
+# You can also use pnpm as a tool to download dependent packages.
+$ pnpm install --unsafe-perm
 
-$ yarn start
+$ pnpm start
+
+# If some dependent packages are not installed, use the following command. The higher version of NPM forbids automatic installation of peer-to-peer dependencies, but we need them, so conflicts arise.
+
+# In In the .npmrc configuration file, add strict peer dependencies = false, which means that the strict peer dependency mode will be turned off.
+$ npm config set strict-peer-dependencies=false
+
+# Change it to true if you want to automatically install peer dependencies.
+$ npm config set auto-install-peers=true
+
 ```
 
-> If there is an error about gyp during yarn install, please ignore it and go ahead!
+> If there is an error about gyp during pnpm install, please ignore it and go ahead! If monaco-editor cannot be found during startup, please go to the original address of the file and copy it .public, you can use the command 'find -name monaco-editor'
 
 4. If writing an front end E2E test, please refer to the [Front End E2E Writing Guide](./front-end-e2e.md)

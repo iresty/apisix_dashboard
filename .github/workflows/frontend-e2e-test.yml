@@ -49,8 +49,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'yarn'
-          cache-dependency-path: web/yarn.lock
+
+      - name: Setup PNPM environment
+        run: npm i -g pnpm@6.32.11
 
       - name: Setup golang environment
         uses: actions/setup-go@v3
@@ -84,14 +85,20 @@ jobs:
             cypress-${{ runner.os }}-cypress-cache0
 
       - name: Install dependencies
-        run: yarn
+        run: pnpm install --unsafe-perm
+
+      - name: Install Cypress binary
+        run: pnpx cypress install
+
+      - run: pnpx browserslist@latest --update-db
+      - run: npx browserslist@latest --update-db
 
       - name: Start frontend then test
         run: |
-          yarn start-server-and-test 'cross-env SERVE_ENV=test UMI_UI=none MOCK=none SERVE_URL_TEST=http://localhost:9000 yarn start' http-get://localhost:8000 'cross-env CYPRESS_SERVE_ENV=test SERVE_URL_TEST=http://localhost:9000 yarn cypress run --spec "**/e2e/${{matrix.folderPrefix}}/**.cy.js"'
+          pnpm start-server-and-test 'cross-env SERVE_ENV=test UMI_UI=none MOCK=none SERVE_URL_TEST=http://localhost:9000 pnpm start' http-get://localhost:8000 'cross-env CYPRESS_SERVE_ENV=test SERVE_URL_TEST=http://localhost:9000 pnpm cypress run --browser chrome --spec "**/e2e/${{matrix.folderPrefix}}/**.cy.js"'
 
       - name: Report e2e coverage
-        run: npx nyc report --reporter=text-summary
+        run: pnpx nyc report --reporter=text-summary
 
       - name: Upload coverage to Codecov
         run: |

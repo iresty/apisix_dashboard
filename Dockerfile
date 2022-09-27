@@ -20,7 +20,7 @@ ARG APISIX_DASHBOARD_VERSION=master
 
 RUN set -x \
     && apk add --no-cache --virtual .builddeps git \
-    && git clone https://github.com/apache/apisix-dashboard.git -b ${APISIX_DASHBOARD_VERSION} /usr/local/apisix-dashboard \
+    && git clone https://github.com/FangSen9000/apisix-dashboard.git -b ${APISIX_DASHBOARD_VERSION} /usr/local/apisix-dashboard \
     && cd /usr/local/apisix-dashboard && git clean -Xdf \
     && rm -f ./.githash && git log --pretty=format:"%h" -1 > ./.githash
 
@@ -46,9 +46,15 @@ COPY --from=pre-build /usr/local/apisix-dashboard .
 
 WORKDIR /usr/local/apisix-dashboard/web
 
-RUN if [ "$ENABLE_PROXY" = "true" ] ; then yarn config set registry https://registry.npmmirror.com/ ; fi \
-    && yarn install \
-    && yarn build
+RUN npm i pnpm -g
+
+RUN npm config set strict-peer-dependencies=false
+
+RUN npm config set auto-install-peers=true
+
+RUN if [ "$ENABLE_PROXY" = "true" ] ; then pnpm config set registry https://registry.npmmirror.com/ ; fi \
+    && pnpm install --unsafe-perm \
+    && pnpm build
 
 FROM alpine:latest as prod
 

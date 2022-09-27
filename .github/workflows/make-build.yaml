@@ -42,8 +42,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'yarn'
-          cache-dependency-path: web/yarn.lock
+
+      - name: Setup PNPM environment
+        run: npm i -g pnpm@6.32.11
+
+      - name: Change the NPM Settings for PNPM
+        run: npm config set strict-peer-dependencies=false
+      - run: npm config set auto-install-peers=true
+
+      - name: Install dependencies
+        run: pnpm install --unsafe-perm
 
       - name: Setup golang environment
         uses: actions/setup-go@v3

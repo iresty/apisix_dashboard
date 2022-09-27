@@ -16,6 +16,6 @@ Dockerfile*
 LICENSE
 .eslintcache
 *.lock
-yarn-error.log
+pnpm-error.log
 .history
 CNAME

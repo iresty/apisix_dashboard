@@ -64,7 +64,6 @@ context('Create and Delete Upstream', () => {
 
     cy.get(selector.upstreamNodeMinus0).should('not.exist');
     cy.contains('button', 'Next').should('not.be.disabled').click();
-    cy.contains('button', 'Next').should('not.be.disabled').click();
     cy.contains('Submit').click({
       force: true,
     });
