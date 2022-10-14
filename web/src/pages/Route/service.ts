@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 import { request } from 'umi';
-import { pickBy, identity } from 'lodash';
 
 import { transformStepData, transformRouteData, transformUpstreamNodes } from './transform';
 import { transformLabelList } from '@/helpers';
@@ -31,45 +30,47 @@ export const update = (
   data: RouteModule.RequestData,
   mode?: RouteModule.RequestMode,
 ) =>
-  request(`/routes/${rid}`, {
+  request<Res<RouteModule.ResponseBody>>(`/routes/${rid}`, {
     method: 'PUT',
     data: mode === 'RawData' ? data : transformStepData(data),
   });
 
 export const fetchItem = (rid: number) =>
-  request(`/routes/${rid}`).then((data) => transformRouteData(data.data));
+  request<Res<ResKeyValue<RouteModule.ResponseBody>>>(`/routes/${rid}`).then((data) =>
+    transformRouteData(data.data.value),
+  );
 
 export const fetchList = ({ current = 1, pageSize = 10, ...res }) => {
   const { labels = [], API_VERSION = [], status } = res;
 
-  return request<Res<ResListData<RouteModule.ResponseBody>>>('/routes', {
+  return request<Res<ResListData<ResKeyValue<RouteModule.ResponseBody>>>>('/routes', {
     params: {
       name: res.name,
       uri: res.uri,
-      label: labels.concat(API_VERSION).join(','),
+      label: labels.concat(API_VERSION).join(',') || undefined,
       page: current,
       page_size: pageSize,
       status,
     },
   }).then(({ data }) => {
     return {
-      data: data.rows,
-      total: data.total_size,
+      data: data.list.map((record) => record.value),
+      total: data.total,
     };
   });
 };
 
-export const remove = (rid: string[]) => request(`/routes/${rid}`, { method: 'DELETE' });
+export const remove = (rid: string[]) => request<Res<null>>(`/routes/${rid}`, { method: 'DELETE' });
 
 export const checkUniqueName = (name = '', exclude = '') =>
-  request('/notexist/routes', {
-    params: pickBy(
-      {
-        name,
-        exclude,
-      },
-      identity,
-    ),
+  request<Res<ResListData<ResKeyValue<RouteModule.ResponseBody>>>>('/routes', {
+    params: { name },
+  }).then(({ data }) => {
+    const idx = data.list.findIndex((keyValue) => keyValue.value.name === name);
+    if (idx !== -1 && data.list[idx].value.id !== exclude) {
+      return Promise.reject();
+    }
+    return Promise.resolve();
   });
 
 export const fetchUpstreamItem = (sid: string) => {
@@ -107,7 +108,7 @@ export const debugRoute = (headers: any, data: RouteModule.debugRequest) => {
 
 export const fetchServiceList = () =>
   request('/services').then(({ data }) => ({
-    data: data.rows,
+    data: data.list,
     total: data.total_size,
   }));
 

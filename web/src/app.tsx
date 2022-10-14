@@ -96,8 +96,8 @@ export const request: RequestConfig = {
       }
 
       const data = await res.json();
-      const { code = -1 } = data as Res<any>;
-      if (code !== 0) {
+      const { success = false } = data as Res<any>;
+      if (!success) {
         // eslint-disable-next-line
         return Promise.reject({ response: res, data });
       }

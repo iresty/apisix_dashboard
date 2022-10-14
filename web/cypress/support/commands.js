@@ -26,7 +26,7 @@ Cypress.Commands.add('login', () => {
     username: 'user',
     password: 'user',
   }).then((res) => {
-    expect(res.body.code).to.equal(0);
+    expect(res.body.success).is.true;
     localStorage.setItem('token', res.body.data.token);
     // set default language
     localStorage.setItem('umi_locale', 'en-US');
@@ -153,7 +153,7 @@ Cypress.Commands.add('requestWithToken', ({ method, url, payload }) => {
     body: payload,
     headers: { Authorization: localStorage.getItem('token') },
   }).then((res) => {
-    expect(res.body.code).to.equal(0);
+    expect(res.body.success).to.true;
     return res;
   });
 });

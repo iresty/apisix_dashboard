@@ -364,7 +364,7 @@ const Page: React.FC = () => {
           .filter((item) => item !== 'API_VERSION')
           .map((item) => (
             <Tag key={Math.random().toString(36).slice(2)}>
-              {item}:{record.labels[item]}
+              {item}:{record.labels?.[item]}
             </Tag>
           ));
       },
@@ -412,7 +412,7 @@ const Page: React.FC = () => {
       render: (_, record) => {
         return Object.keys(record.labels || {})
           .filter((item) => item === 'API_VERSION')
-          .map((item) => record.labels[item]);
+          .map((item) => record.labels?.[item]);
       },
       renderFormItem: (_, { type }) => {
         if (type === 'form') {
@@ -549,7 +549,8 @@ const Page: React.FC = () => {
         tableAlertRender={() => (
           <Space size={24}>
             <span>
-            {formatMessage({ id: 'page.route.chosen' })} {selectedRowKeys.length} {formatMessage({ id: 'page.route.item' })}
+              {formatMessage({ id: 'page.route.chosen' })} {selectedRowKeys.length}{' '}
+              {formatMessage({ id: 'page.route.item' })}
             </span>
           </Space>
         )}
@@ -557,16 +558,17 @@ const Page: React.FC = () => {
           return (
             <Space size={16}>
               <Button
-               onClick={async () => {
-               await remove(selectedRowKeys).then(() => {
-                handleTableActionSuccessResponse(
-                  `${formatMessage({ id: 'component.global.delete.routes.success' })}`,
-                );
-               });
-               ref.current?.reloadAndRest?.();
-             }}>
-             {formatMessage({ id: 'page.route.batchDeletion' })}
-             </Button>
+                onClick={async () => {
+                  await remove(selectedRowKeys).then(() => {
+                    handleTableActionSuccessResponse(
+                      `${formatMessage({ id: 'component.global.delete.routes.success' })}`,
+                    );
+                  });
+                  ref.current?.reloadAndRest?.();
+                }}
+              >
+                {formatMessage({ id: 'page.route.batchDeletion' })}
+              </Button>
             </Space>
           );
         }}

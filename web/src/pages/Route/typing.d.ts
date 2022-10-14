@@ -67,21 +67,21 @@ declare namespace RouteModule {
 
   // Request Body or Response Data for API
   type Body = {
-    id?: number;
+    id?: string;
     status: number;
-    name: string;
-    labels: Record<string, string>;
-    desc: string;
+    name?: string;
+    labels?: Record<string, string>;
+    desc?: string;
     priority?: number;
     methods: HttpMethod[];
     uri?: string;
-    uris: string[];
+    uris?: string[];
     host?: string;
     hosts?: string[];
     remote_addr?: string;
     remote_addrs?: string[];
     upstream: UpstreamComponent.ResponseData;
-    vars: VarTuple[];
+    vars?: VarTuple[];
     upstream_path?: {
       type?: string;
       from?: string;
@@ -90,7 +90,7 @@ declare namespace RouteModule {
     upstream_id?: string;
     plugins: Record<string, any>;
     plugin_config_id?: string;
-    script: Record<string, any>;
+    script?: Record<string, any>;
     url?: string;
     enable_websocket?: boolean;
     service_id?: string;
@@ -190,30 +190,40 @@ declare namespace RouteModule {
   };
 
   type ResponseBody = {
-    id: string;
-    methods: HttpMethod[];
-    name: string;
-    remote_addrs: string[];
-    script: any;
-    desc?: string;
-    labels: Record<string, string>;
-    upstream: {
-      checks: UpstreamModule.HealthCheck;
-      create_time: number;
-      id: string;
-      nodes: {
-        port: number;
-      }[];
-      timeout: UpstreamModule.Timeout;
-      type: UpstreamModule.Type;
-    };
-    uri: string;
-    uris?: string[];
-    host: string;
-    hosts?: string[];
     create_time: number;
     update_time: number;
+    id: string;
+    methods: HttpMethod[];
+    name?: string;
+    desc?: string;
+    host?: string;
+    hosts?: string[];
+    plugins: Plugins;
+    priority: number;
     status: number;
+    upstream: Upstream;
+    uri?: string;
+    uris?: string[];
+    labels?: Record<string, string>;
+    vars?: VarTuple[];
+    script?: Record<string, unknown>;
+    remote_addr?: string;
+    remote_addrs?: string[];
+    upstream_id?: string;
+    plugin_config_id?: string;
+    service_id?: string;
+    enable_websocket?: boolean;
+  };
+
+  type Plugins = Record<keyof any, Record<string, unknown>>[];
+
+  type Upstream = {
+    hash_on: string;
+    nodes: Record<string, number>;
+    pass_host: string;
+    scheme: string;
+    type: string;
+    upstream_id?: string;
   };
 
   type RouteStatus = 0 | 1;

@@ -56,15 +56,19 @@ declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
 type PageMode = 'CREATE' | 'EDIT' | 'VIEW';
 
 type Res<T> = {
-  code: number;
   message: string;
-  request_id: string;
+  success: boolean;
   data: T;
 };
 
 type ResListData<T> = {
-  rows: T[];
-  total_size: number;
+  list: T[];
+  total: number;
+};
+
+type ResKeyValue<T> = {
+  key: string;
+  value: T;
 };
 
 type HttpMethod =
