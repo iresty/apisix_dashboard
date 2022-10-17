@@ -32,7 +32,8 @@ data_source:                                       # The data source type of API
 
 security:
   allow_list:             # If we don't set any IP list, then localhost IP access is allowed by default.
-    - 127.0.0.1           # The rules are checked in sequence until the first match is found.
+    - 172.16.238.1        # The rules are checked in sequence until the first match is found.
+    - 127.0.0.1
     - ::1                 # In this example, access is allowed only for IPv4 network 127.0.0.1, and for IPv6 network ::1.
                           # It also supports CIDR like 192.168.1.0/24 and 2001:0db8::/32
   cors:

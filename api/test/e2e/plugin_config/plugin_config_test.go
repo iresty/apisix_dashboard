@@ -26,230 +26,87 @@ import (
 )
 
 var _ = Describe("Plugin Config", func() {
-	DescribeTable("Test plugin config CURD",
+	DescribeTable("test plugin config create and update",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		Entry("Get plugin config (Not Exist)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/plugin_configs/1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusNotFound,
-		}),
-		Entry("List plugin config (Empty)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/plugin_configs",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":0`,
-		}),
-		Entry("Create plugin config #1", base.HttpTestCase{
+		Entry("create plugin config 1 by id", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/plugin_configs/1",
 			Body: `{
+				"desc": "enable limit-count plugin",
 				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"1.0"
-						}
-					},
-					"uri-blocker": {
-						"block_rules": ["select.+(from|limit)", "(?:(union(.*?)select))"]
+					"limit-count": {
+						"count": 2,
+						"time_window": 60,
+						"rejected_code": 503
 					}
-				},
-				"labels": {
-					"version": "v1",
-					"build":   "16"
 				}
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-VERSION":"1.0"`,
 		}),
-		Entry("Get plugin config (Exist)", base.HttpTestCase{
+		Entry("get plugin config 1", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/plugin_configs/1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-VERSION":"1.0"`,
+			ExpectBody:   []string{"\"key\":\"/apisix/plugin_configs/1\"", "\"plugins\":{\"limit-count\"", "\"count\":2"},
 		}),
-		Entry("List plugin config (1 item)", base.HttpTestCase{
+		Entry("get plugin configs", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/plugin_configs",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":1`,
-		}),
-		Entry("Create plugin config #2", base.HttpTestCase{
+			ExpectBody:   []string{"\"key\":\"/apisix/plugin_configs/1\"", "\"plugins\":{\"limit-count\"", "\"count\":2"}}),
+		Entry("patch plugin config 1", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
-			Path:   "/apisix/admin/plugin_configs/2",
-			Body: `{
-				"id": "2",
-				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"2.0"
-						}
-					}
-				},
-				"labels": {
-					"version": "v2",
-					"build":   "17",
-					"extra":   "test"
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-VERSION":"2.0"`,
-		}),
-		Entry("Search plugin config (By Label key:value)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Path:         "/apisix/admin/plugin_configs",
-			Query:        "label=build:16",
-			Method:       http.MethodGet,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"labels":{"build":"16","version":"v1"}`,
-		}),
-		Entry("Search plugin config (By Label key)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Path:         "/apisix/admin/plugin_configs",
-			Query:        "label=extra",
-			Method:       http.MethodGet,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"labels":{"build":"17","extra":"test","version":"v2"}`,
-		}),
-		Entry("Update plugin config (Full)", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
+			Method: http.MethodPatch,
 			Path:   "/apisix/admin/plugin_configs/1",
 			Body: `{
 				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-TEST":"1.0"
-						}
-					},
-					"uri-blocker": {
-						"block_rules": ["select.+(from|limit)", "(?:(union(.*?)select))"]
+					"limit-count": {
+						"count": 3,
+						"time_window": 60,
+						"rejected_code": 503
 					}
-				},
-				"labels": {
-					"version": "v1",
-					"build":   "16"
 				}
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-TEST":"1.0"`,
 		}),
-		Entry("Update plugin config (Partial)", base.HttpTestCase{
+		Entry("get plugin config 1", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/plugin_configs/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"key\":\"/apisix/plugin_configs/1\"", "\"plugins\":{\"limit-count\"", "\"count\":3"},
+		}),
+		Entry("subpath patch plugin config 1", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPatch,
 			Path:   "/apisix/admin/plugin_configs/1/plugins",
 			Body: `{
-				"response-rewrite": {
-					"headers": {
-						"X-TEST":"2.0"
-					}
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-TEST":"2.0"`,
-		}),
-		Entry("Batch Delete plugin config", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodDelete,
-			Path:         "/apisix/admin/plugin_configs/1,2",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-		}),
-	)
-
-	DescribeTable("Test plugin config Integration",
-		func(tc base.HttpTestCase) {
-			base.RunTestCase(tc)
-		},
-		Entry("Create plugin config", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Path:   "/apisix/admin/plugin_configs/1",
-			Method: http.MethodPut,
-			Body: `{
-				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"1.0"
-						}
-					},
-					"uri-blocker": {
-						"block_rules": ["select.+(from|limit)", "(?:(union(.*?)select))"]
-					}
-				},
-				"labels": {
-					"version": "v1",
-					"build":   "16"
+				"limit-count": {
+					"count": 4,
+					"time_window": 60,
+					"rejected_code": 503
 				}
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		Entry("Create route", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
-			Path:   "/apisix/admin/routes/r1",
-			Body: `{
-				 "name": "route1",
-				 "uri": "/hello",
-				 "plugin_config_id": "1",
-				 "upstream": {
-					 "type": "roundrobin",
-					"nodes": [{
-						"host": "` + base.UpstreamIp + `",
-						"port": 1981,
-						"weight": 1
-					}]
-				 }
-			 }`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-		}),
-		Entry("Verify (Add Header)", base.HttpTestCase{
-			Object:        base.APISIXExpect(),
-			Method:        http.MethodGet,
-			Path:          "/hello",
-			ExpectStatus:  http.StatusOK,
-			ExpectBody:    "hello world",
-			ExpectHeaders: map[string]string{"X-VERSION": "1.0"},
-		}),
-		Entry("Verify (URI Block)", base.HttpTestCase{
-			Object:        base.APISIXExpect(),
-			Method:        http.MethodGet,
-			Path:          "/hello",
-			Query:         "name=%3Bselect%20from%20sys",
-			ExpectStatus:  http.StatusForbidden,
-			ExpectHeaders: map[string]string{"X-VERSION": "1.0"},
-		}),
-		Entry("Delete route", base.HttpTestCase{
+		Entry("get plugin config 1", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodDelete,
-			Path:         "/apisix/admin/routes/r1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-		}),
-		Entry("Delete plugin config", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodDelete,
+			Method:       http.MethodGet,
 			Path:         "/apisix/admin/plugin_configs/1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"key\":\"/apisix/plugin_configs/1\"", "\"plugins\":{\"limit-count\"", "\"count\":4"},
 		}),
 	)
 })

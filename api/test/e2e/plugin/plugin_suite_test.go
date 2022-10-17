@@ -14,16 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package label
+package plugin_test
 
 import (
 	"testing"
+	"time"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/onsi/ginkgo"
+
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-func TestLabel(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Label Suite")
+func TestPlugin(t *testing.T) {
+	ginkgo.RunSpecs(t, "Plugin Suite")
 }
+
+var _ = ginkgo.AfterSuite(func() {
+	time.Sleep(base.SleepTime)
+})

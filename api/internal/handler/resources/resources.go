@@ -18,8 +18,8 @@
 package resources
 
 import (
+	"errors"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -77,7 +77,7 @@ func (h *Handler) ApplyRoute(r *gin.Engine, cfg config.Config) {
 	}
 
 	// add misc routes
-	r.GET("/apisix/admin/plugins/list", handler.Wrap(h.ProxyMisc, nil))
+	r.GET("/apisix/admin/plugins/*param", handler.Wrap(h.ProxyMisc, nil))
 	r.GET("/apisix/admin/schema/*param", handler.Wrap(h.ProxyMisc, nil))
 }
 
@@ -91,12 +91,19 @@ func (h *Handler) setupClient(cfg config.Config) {
 func (h *Handler) ProxyResource(c *gin.Context, _ interface{}) handler.Response {
 	resp, err := h.proxy(c)
 	if err != nil {
-		return *err
+		return handler.Response{
+			Success: false,
+			ErrMsg:  err.Error(),
+		}
 	}
 
 	data := gjson.ParseBytes(resp.Body())
 	if err := h.extractError(data); err != nil {
-		return *err
+		return handler.Response{
+			StatusCode: resp.StatusCode(),
+			Success:    false,
+			ErrMsg:     err.Error(),
+		}
 	}
 
 	// process resource response data
@@ -106,8 +113,9 @@ func (h *Handler) ProxyResource(c *gin.Context, _ interface{}) handler.Response 
 	}
 
 	return handler.Response{
-		Success: true,
-		Data:    h.processResponse(version, data),
+		Success:    true,
+		StatusCode: resp.StatusCode(),
+		Data:       h.processResponse(version, data),
 	}
 }
 
@@ -115,22 +123,30 @@ func (h *Handler) ProxyResource(c *gin.Context, _ interface{}) handler.Response 
 func (h *Handler) ProxyMisc(c *gin.Context, _ interface{}) handler.Response {
 	resp, err := h.proxy(c)
 	if err != nil {
-		return *err
+		return handler.Response{
+			Success: false,
+			ErrMsg:  err.Error(),
+		}
 	}
 
 	data := gjson.ParseBytes(resp.Body())
 	if err := h.extractError(data); err != nil {
-		return *err
+		return handler.Response{
+			Success:    false,
+			StatusCode: resp.StatusCode(),
+			ErrMsg:     err.Error(),
+		}
 	}
 
 	return handler.Response{
-		Success: true,
-		Data:    data.Value(),
+		Success:    true,
+		StatusCode: resp.StatusCode(),
+		Data:       data.Value(),
 	}
 }
 
 // proxy forwards user requests for these interfaces to the Admin API as-is.
-func (h *Handler) proxy(c *gin.Context) (*resty.Response, *handler.Response) {
+func (h *Handler) proxy(c *gin.Context) (*resty.Response, error) {
 	req := h.client.NewRequest()
 	req.SetHeaderMultiValues(c.Request.Header)
 	req.SetQueryParamsFromValues(c.Request.URL.Query())
@@ -138,28 +154,16 @@ func (h *Handler) proxy(c *gin.Context) (*resty.Response, *handler.Response) {
 
 	resourceURI := strings.Replace(c.Request.URL.Path, "/apisix/admin", "", 1)
 	resp, err := req.Execute(c.Request.Method, resourceURI)
-	if err != nil {
-		return nil, &handler.Response{
-			StatusCode: http.StatusInternalServerError,
-			Message:    "Admin API request failed",
-		}
-	}
-
-	return resp, nil
+	return resp, err
 }
 
-func (h *Handler) extractError(data gjson.Result) *handler.Response {
+func (h *Handler) extractError(data gjson.Result) error {
 	if data.Get("error_msg").Exists() {
-		return &handler.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    data.Get("error_msg").String(),
-		}
+		return errors.New(data.Get("error_msg").String())
 	}
+
 	if data.Get("message").Exists() {
-		return &handler.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    data.Get("message").String(),
-		}
+		return errors.New(data.Get("message").String())
 	}
 
 	return nil

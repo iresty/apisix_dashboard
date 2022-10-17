@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package schema_test
+package plugin_test
 
 import (
 	"net/http"
@@ -25,26 +25,32 @@ import (
 	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = Describe("Plugin List", func() {
-	DescribeTable("test plugin basic",
-		func(testCase base.HttpTestCase) {
-			base.RunTestCase(testCase)
+var _ = Describe("Plugin", func() {
+	DescribeTable("test plugin get",
+		func(tc base.HttpTestCase) {
+			base.RunTestCase(tc)
 		},
-		Entry("get all plugins", base.HttpTestCase{
+		Entry("get plugin list", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
-			Path:         "/apisix/admin/plugins",
-			Query:        "all=true",
+			Path:         "/apisix/admin/plugins/list",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   []string{"request-id", "syslog", "echo", "proxy-mirror"},
-			Sleep:        base.SleepTime,
+			ExpectBody:   []string{"limit-req"},
+		}),
+		Entry("get plugin", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/plugins/limit-req",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"required\":[\"rate\",\"burst\",\"key\"]"},
 		}),
 		Entry("get all plugins", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/plugins",
-			Query:        "all=false",
+			Query:        "all=true",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 			ExpectBody:   []string{"request-id", "syslog", "echo", "proxy-mirror"},

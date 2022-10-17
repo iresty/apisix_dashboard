@@ -32,7 +32,6 @@ func TestSSL(t *testing.T) {
 }
 
 var _ = ginkgo.AfterSuite(func() {
-	base.CleanResource("ssl")
-	base.CleanResource("routes")
+	base.CleanResource("ssls")
 	time.Sleep(base.SleepTime)
 })

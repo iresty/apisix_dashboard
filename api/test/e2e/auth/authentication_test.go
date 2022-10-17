@@ -32,7 +32,7 @@ var _ = Describe("Authentication", func() {
 			Path:         "/apisix/admin/routes",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"code":0`,
+			ExpectBody:   "\"success\":true",
 		})
 	})
 

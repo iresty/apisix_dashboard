@@ -38,8 +38,8 @@ type Func = func(c *gin.Context, input interface{}) Response
 type Response struct {
 	StatusCode int
 	Success    bool
-	Message    string
 	Data       interface{}
+	ErrMsg     string
 }
 
 func Wrap(f Func, inputType reflect.Type) gin.HandlerFunc {
@@ -60,10 +60,8 @@ func Wrap(f Func, inputType reflect.Type) gin.HandlerFunc {
 		}
 
 		resp := f(c, input)
-		if resp.StatusCode == 0 {
-			resp.StatusCode = 200
-		}
-		c.JSON(resp.StatusCode, buildResponse(resp.Success, resp.Message, resp.Data))
+
+		c.JSON(resp.StatusCode, buildResponse(resp.Success, resp.ErrMsg, resp.Data))
 	}
 }
 

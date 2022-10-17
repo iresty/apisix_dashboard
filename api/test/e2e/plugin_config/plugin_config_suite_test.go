@@ -31,6 +31,5 @@ func TestPluginConfig(t *testing.T) {
 
 var _ = ginkgo.AfterSuite(func() {
 	base.CleanResource("plugin_configs")
-	base.CleanResource("routes")
 	time.Sleep(base.SleepTime)
 })

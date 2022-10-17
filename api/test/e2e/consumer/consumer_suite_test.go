@@ -32,7 +32,6 @@ func TestConsumer(t *testing.T) {
 }
 
 var _ = AfterSuite(func() {
-	base.CleanResource("routes")
 	base.CleanResource("consumers")
 	time.Sleep(base.SleepTime)
 })

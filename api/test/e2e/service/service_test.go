@@ -26,133 +26,113 @@ import (
 )
 
 var _ = Describe("Service", func() {
-	var _ = DescribeTable("Test service CURD",
+	DescribeTable("test service create and update",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		Entry("Get service (Not Exist)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/services/1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusNotFound,
-		}),
-		Entry("List service (Empty)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/services",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":0`,
-		}),
-		Entry("Create service #1", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
-			Path:   "/apisix/admin/services/1",
-			Body: `{
-				"name": "service1",
-				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"1.0"
-						}
-					}
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-VERSION":"1.0"`,
-		}),
-		Entry("Get service (Exist)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/services/1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-VERSION":"1.0"`,
-		}),
-		Entry("List service (1 item)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/services",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":1`,
-		}),
-		Entry("Create service #2", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
-			Path:   "/apisix/admin/services/2",
-			Body: `{
-				"name": "service2",
-				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"2.0"
-						}
-					}
-				}
-			}`,
-			Headers: map[string]string{"Authorization": base.GetToken()},
-			//ExpectStatus: http.StatusOK,
-			ExpectBody: `"X-VERSION":"2.0"`,
-		}),
-		Entry("List service (2 items)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/services",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":2`,
-		}),
-		Entry("List service (Paginate)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/services",
-			Query:        "page=2&page_size=1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"id":"2"`,
-		}),
-		Entry("Update service (Full)", base.HttpTestCase{
+		Entry("create service1 by id", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/services/1",
 			Body: `{
 				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-TEST":"1.0"
-						}
-					}
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"X-TEST\":\"1.0\"",
-		}),
-		Entry("Update service (Partial)", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPatch,
-			Path:   "/apisix/admin/services/1/plugins",
-			Body: `{
-				"response-rewrite": {
-					"headers": {
-						"X-VERSION":"1.0"
+					"limit-count": {
+						"count": 2,
+						"time_window": 60,
+						"rejected_code": 503,
+						"key": "remote_addr"
 					}
 				},
-				"key-auth": {}
+				"enable_websocket": true,
+				"upstream": {
+					"type": "roundrobin",
+					"nodes": {
+						"127.0.0.1:1980": 1
+					}
+				}
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"key-auth\":{}",
 		}),
-		Entry("Delete service", base.HttpTestCase{
+		Entry("get service1", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodDelete,
+			Method:       http.MethodGet,
 			Path:         "/apisix/admin/services/1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"key\":\"/apisix/services/1\"", "\"plugins\":{\"limit-count\"", "\"nodes\":{\"127.0.0.1:1980\":1}"},
+		}),
+		Entry("create service2 by random id", base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPost,
+			Path:   "/apisix/admin/services",
+			Body: `{
+				"plugins": {
+					"limit-count": {
+						"count": 2,
+						"time_window": 60,
+						"rejected_code": 503,
+						"key": "remote_addr"
+					}
+				},
+				"enable_websocket": true,
+				"upstream": {
+					"type": "roundrobin",
+					"nodes": {
+						"127.0.0.1:1981": 1
+					}
+				}
+			}`,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+		}),
+		Entry("get services", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/services",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"count\":2", "\"nodes\":{\"127.0.0.1:1981\":1}"},
+		}),
+		Entry("patch service1", base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPatch,
+			Path:   "/apisix/admin/services/1",
+			Body: `{
+				"upstream": {
+					"nodes": {
+						"` + base.UpstreamIp + `:1982": 1
+					}
+				}
+			}`,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+		}),
+		Entry("get service1", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/services/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"key\":\"/apisix/services/1", "\"nodes\":{\"127.0.0.1:1980\":1,\"127.0.0.1:1982\":1}"},
+		}),
+		Entry("subpath patch service1", base.HttpTestCase{
+			Object: base.ManagerApiExpect(),
+			Method: http.MethodPatch,
+			Path:   "/apisix/admin/services/1/upstream/nodes",
+			Body: `{
+				"` + base.UpstreamIp + `:1983": 1
+			}`,
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+		}),
+		Entry("get service1", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/services/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"key\":\"/apisix/services/1", "\"nodes\":{\"127.0.0.1:1983\":1}"},
 		}),
 	)
 })

@@ -32,7 +32,6 @@ func TestGlobalRule(t *testing.T) {
 }
 
 var _ = AfterSuite(func() {
-	base.CleanResource("routes")
 	base.CleanResource("global_rules")
 	time.Sleep(base.SleepTime)
 })

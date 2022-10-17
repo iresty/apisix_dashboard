@@ -26,148 +26,61 @@ import (
 )
 
 var _ = Describe("Stream Route", func() {
-	DescribeTable("Test stream route CURD",
+	DescribeTable("test stream route create and update",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		Entry("Get stream route (Not Exist)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/stream_routes/1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusNotFound,
-		}),
-		Entry("List stream route (Empty)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/stream_routes",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":0`,
-		}),
-		Entry("Create stream route #1", base.HttpTestCase{
+		Entry("create stream route 1 by id", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/stream_routes/1",
 			Body: `{
 				"remote_addr": "127.0.0.1",
-				"server_addr": "127.0.0.1",
-				"server_port": 10090,
-				"sni": "test.com",
+				"desc": "test-desc",
 				"upstream": {
 					"nodes": {
-						"` + base.UpstreamIp + `:1980": 1
+						"127.0.0.1:8080": 1
 					},
 					"type": "roundrobin"
-				}
+				},
+				"desc": "new route"
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"remote_addr":"127.0.0.1"`,
 		}),
-		Entry("Get stream route (Exist)", base.HttpTestCase{
+		Entry("get stream route 1", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/stream_routes/1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"server_port":10090`,
+			ExpectBody:   []string{"\"key\":\"/apisix/stream_routes/1\"", "\"remote_addr\":\"127.0.0.1\""},
 		}),
-		Entry("List stream route (1 item)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/stream_routes",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":1`,
-		}),
-		Entry("Create stream route #2", base.HttpTestCase{
+		Entry("create stream route by random id", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPost,
 			Path:   "/apisix/admin/stream_routes",
 			Body: `{
-				"id": "2",
-				"remote_addr": "127.0.0.1",
-				"server_addr": "127.0.0.1",
-				"server_port": 10091,
-				"sni": "test.com",
+				"remote_addr": "127.0.0.2",
+				"desc": "test-desc",
 				"upstream": {
 					"nodes": {
-						"` + base.UpstreamIp + `:1980": 1
+						"127.0.0.1:8080": 1
 					},
 					"type": "roundrobin"
-				}
+				},
+				"desc": "new route"
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"server_port":10091`,
 		}),
-		Entry("List stream route (2 items)", base.HttpTestCase{
+		Entry("get stream routes", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/stream_routes",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":2`,
-		}),
-		Entry("List stream route (Paginate)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/stream_routes",
-			Query:        "page=2&page_size=1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"id":"2"`,
-		}),
-		Entry("Update stream route (Full)", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
-			Path:   "/apisix/admin/stream_routes/1",
-			Body: `{
-				"remote_addr": "127.0.0.1",
-				"server_addr": "127.0.0.1",
-				"server_port": 10091,
-				"sni": "test.com",
-				"upstream": {
-					"nodes": {
-						"` + base.UpstreamIp + `:1980": 1
-					},
-					"type": "roundrobin"
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"server_port":10091`,
-		}),
-		Entry("Batch Delete stream route", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodDelete,
-			Path:         "/apisix/admin/stream_routes/1,2",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"key\":\"/apisix/stream_routes/1\"", "\"remote_addr\":\"127.0.0.2\""},
 		}),
 	)
-
-	DescribeTable("Test stream route CURD exception",
-		func(tc base.HttpTestCase) {
-			base.RunTestCase(tc)
-		},
-		Entry("Create stream route with upstream id not found", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPost,
-			Path:   "/apisix/admin/stream_routes",
-			Body: `{
-				"id": "sr1",
-				"server_port": 10090,
-				"upstream_id": "u1"
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusBadRequest,
-		}),
-	)
-
-	It("Clean all resources", func() {
-		base.CleanResource("stream_routes")
-		base.CleanResource("ssl")
-	})
 })

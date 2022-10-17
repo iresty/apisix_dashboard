@@ -25,242 +25,91 @@ import (
 	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = Describe("Global Rule", func() {
-	DescribeTable("Test global rule CURD",
+var _ = Describe("Global Rules", func() {
+	DescribeTable("test global rules create and update",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		Entry("Get global rule (Not Exist)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/global_rules/1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusNotFound,
-		}),
-		Entry("List global rule (Empty)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/global_rules",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":0`,
-		}),
-		Entry("Create global rule #1", base.HttpTestCase{
+		Entry("create global rule 1 by id", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
 			Path:   "/apisix/admin/global_rules/1",
 			Body: `{
 				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"1.0"
-						}
+					"limit-count": {
+						"count": 2,
+						"time_window": 60,
+						"rejected_code": 503,
+						"key": "remote_addr"
 					}
 				}
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-VERSION":"1.0"`,
 		}),
-		Entry("Get global rule (Exist)", base.HttpTestCase{
+		Entry("get global rule 1", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/global_rules/1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-VERSION":"1.0"`,
+			ExpectBody:   []string{"\"key\":\"/apisix/global_rules/1\"", "\"plugins\":{\"limit-count\"", "\"count\":2"},
 		}),
-		Entry("List global rule (1 item)", base.HttpTestCase{
+		Entry("get global rule", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
 			Path:         "/apisix/admin/global_rules",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":1`,
+			ExpectBody:   []string{"\"key\":\"/apisix/global_rules/1\"", "\"plugins\":{\"limit-count\"", "\"count\":2"},
 		}),
-		Entry("Create global rule #2", base.HttpTestCase{
+		Entry("patch global rule 1", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
-			Path:   "/apisix/admin/global_rules/2",
-			Body: `{
-				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"2.0"
-						}
-					}
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"X-VERSION":"2.0"`,
-		}),
-		Entry("List global rule (2 item)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/global_rules",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"total_size":2`,
-		}),
-		Entry("List global rule (Paginate)", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/global_rules",
-			Query:        "page=2&page_size=1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"id":"2"`,
-		}),
-		Entry("Update global rule (Full)", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
+			Method: http.MethodPatch,
 			Path:   "/apisix/admin/global_rules/1",
 			Body: `{
 				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-TEST":"1.0"
-						}
+					"limit-count": {
+						"count": 3,
+						"time_window": 60,
+						"rejected_code": 503,
+						"key": "remote_addr"
 					}
 				}
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"X-TEST\":\"1.0\"",
 		}),
-		Entry("Update global rule (Partial)", base.HttpTestCase{
+		Entry("get global rule 1", base.HttpTestCase{
+			Object:       base.ManagerApiExpect(),
+			Method:       http.MethodGet,
+			Path:         "/apisix/admin/global_rules/1",
+			Headers:      map[string]string{"Authorization": base.GetToken()},
+			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"key\":\"/apisix/global_rules/1\"", "\"plugins\":{\"limit-count\"", "\"count\":3"},
+		}),
+		Entry("subpath patch global rule 1", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPatch,
 			Path:   "/apisix/admin/global_rules/1/plugins",
 			Body: `{
-				"response-rewrite": {
-					"headers": {
-						"X-VERSION":"1.0"
-					}
-				},
-				"key-auth": {}
+				"limit-count": {
+					"count": 4,
+					"time_window": 60,
+					"rejected_code": 503,
+					"key": "remote_addr"
+				}
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"key-auth\":{}",
 		}),
-		Entry("Delete global rule", base.HttpTestCase{
+		Entry("get global rule 1", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodDelete,
+			Method:       http.MethodGet,
 			Path:         "/apisix/admin/global_rules/1",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-		}),
-	)
-
-	DescribeTable("Test global rule Integration",
-		func(tc base.HttpTestCase) {
-			base.RunTestCase(tc)
-		},
-		Entry("Create route", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
-			Path:   "/apisix/admin/routes/r1",
-			Body: `{
-				"name": "route1",
-				"uri": "/hello",
-				"upstream": {
-					"type": "roundrobin",
-					"nodes": [{
-						"host": "` + base.UpstreamIp + `",
-						"port": 1981,
-						"weight": 1
-					}]
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-		}),
-		Entry("Create global rule", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
-			Path:   "/apisix/admin/global_rules/1",
-			Body: `{
-				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"1.0"
-						}
-					},
-					"uri-blocker": {
-						"block_rules": ["select.+(from|limit)", "(?:(union(.*?)select))"]
-					}
-				}
-			}`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"X-VERSION\":\"1.0\"",
-		}),
-		Entry("Verify route with header", base.HttpTestCase{
-			Object:        base.APISIXExpect(),
-			Method:        http.MethodGet,
-			Path:          "/hello",
-			ExpectStatus:  http.StatusOK,
-			ExpectBody:    "hello world",
-			ExpectHeaders: map[string]string{"X-VERSION": "1.0"},
-		}),
-		Entry("Verify route that should be blocked", base.HttpTestCase{
-			Object:        base.APISIXExpect(),
-			Method:        http.MethodGet,
-			Path:          "/hello",
-			Query:         "name=%3Bselect%20from%20sys",
-			ExpectStatus:  http.StatusForbidden,
-			ExpectHeaders: map[string]string{"X-VERSION": "1.0"},
-		}),
-		Entry("Update route with same plugin response-rewrite", base.HttpTestCase{
-			Object: base.ManagerApiExpect(),
-			Method: http.MethodPut,
-			Path:   "/apisix/admin/routes/r1",
-			Body: `{
-				"name": "route1",
-				"uri": "/hello",
-				"plugins": {
-					"response-rewrite": {
-						"headers": {
-							"X-VERSION":"2.0"
-						}
-					}
-				},
-				"upstream": {
-					"type": "roundrobin",
-					"nodes": [{
-						"host": "` + base.UpstreamIp + `",
-						"port": 1981,
-						"weight": 1
-					}]
-				}
-			 }`,
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-			ExpectBody:   "\"X-VERSION\":\"2.0\"",
-		}),
-		Entry("Verify route that header should override", base.HttpTestCase{
-			Object:        base.APISIXExpect(),
-			Method:        http.MethodGet,
-			Path:          "/hello",
-			ExpectStatus:  http.StatusOK,
-			ExpectBody:    "hello world",
-			ExpectHeaders: map[string]string{"X-VERSION": "2.0"},
-		}),
-		Entry("Delete global rule", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodDelete,
-			Path:         "/apisix/admin/global_rules/1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
-		}),
-		Entry("Delete route", base.HttpTestCase{
-			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodDelete,
-			Path:         "/apisix/admin/routes/r1",
-			Headers:      map[string]string{"Authorization": base.GetToken()},
-			ExpectStatus: http.StatusOK,
+			ExpectBody:   []string{"\"key\":\"/apisix/global_rules/1\"", "\"plugins\":{\"limit-count\"", "\"count\":4"},
 		}),
 	)
 })

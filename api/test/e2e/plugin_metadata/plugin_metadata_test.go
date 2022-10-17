@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package consumer_test
+package plugin_metadata_test
 
 import (
 	"net/http"
@@ -25,47 +25,36 @@ import (
 	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-var _ = Describe("Consumer", func() {
-	DescribeTable("test consumer create and update",
+var _ = Describe("Plugin Metadata", func() {
+	DescribeTable("test plugin metadata create and update",
 		func(tc base.HttpTestCase) {
 			base.RunTestCase(tc)
 		},
-		Entry("create consumer", base.HttpTestCase{
+		Entry("create plugin metadata by name", base.HttpTestCase{
 			Object: base.ManagerApiExpect(),
 			Method: http.MethodPut,
-			Path:   "/apisix/admin/consumers",
+			Path:   "/apisix/admin/plugin_metadata/example-plugin",
 			Body: `{
-				"username": "jack",
-				"plugins": {
-					"key-auth": {
-						"key": "auth-one"
-					},
-					"limit-count": {
-						"count": 2,
-						"time_window": 60,
-						"rejected_code": 503,
-						"key": "remote_addr"
-					}
-				}
+				"skey": "val",
+				"ikey": 1
 			}`,
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
 		}),
-		Entry("get consumer", base.HttpTestCase{
+		Entry("get plugin metadata", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
 			Method:       http.MethodGet,
-			Path:         "/apisix/admin/consumers",
+			Path:         "/apisix/admin/plugin_metadata/example-plugin",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   []string{"\"key\":\"/apisix/consumers/jack\"", "\"plugins\":{\"key-auth\"", "\"limit-count\""},
+			ExpectBody:   []string{"\"key\":\"/apisix/plugin_metadata/example-plugin\"", "\"ikey\":1,\"skey\":\"val\""},
 		}),
-		Entry("get consumer", base.HttpTestCase{
+		Entry("delete plugin metadata", base.HttpTestCase{
 			Object:       base.ManagerApiExpect(),
-			Method:       http.MethodGet,
-			Path:         "/apisix/admin/consumers/jack",
+			Method:       http.MethodDelete,
+			Path:         "/apisix/admin/plugin_metadata/example-plugin",
 			Headers:      map[string]string{"Authorization": base.GetToken()},
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   []string{"\"key\":\"/apisix/consumers/jack\"", "\"plugins\":{\"key-auth\"", "\"limit-count\""},
 		}),
 	)
 })

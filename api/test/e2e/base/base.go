@@ -35,12 +35,9 @@ import (
 )
 
 var (
-	token string
-
+	token                  string
 	UpstreamIp             = "172.16.238.20"
-	UpstreamGrpcIp         = "172.16.238.21"
 	APISIXHost             = "http://127.0.0.1:9080"
-	APISIXInternalUrl      = "http://172.16.238.30:9080"
 	APISIXSingleWorkerHost = "http://127.0.0.1:9081"
 	ManagerAPIHost         = "http://127.0.0.1:9000"
 	PrometheusExporter     = "http://127.0.0.1:9091"
@@ -57,7 +54,7 @@ func GetToken() string {
 	}`
 
 	url := ManagerAPIHost + "/apisix/admin/user/login"
-	body, _, err := HttpPost(url, nil, requestBody)
+	body, _, err := HttpPost(url, map[string]string{"Content-Type": "application/json"}, requestBody)
 	if err != nil {
 		panic(err)
 	}
@@ -304,18 +301,24 @@ func GetResourceList(resource string) string {
 
 func CleanResource(resource string) {
 	resources := GetResourceList(resource)
-	list := gjson.Get(resources, "data.rows").Value().([]interface{})
+	//body, _ := json.Marshal(resources)
+	//res := fmt.Sprintf("%s%s", "resources: ", resources)
+	//panic(res)
+
+	list := gjson.Get(resources, "data.list").Value().([]interface{})
 	for _, item := range list {
 		resourceObj := item.(map[string]interface{})
 		idTag := "id"
 		if resource == "consumers" {
 			idTag = "username"
 		}
+		value := resourceObj["value"].(map[string]interface{})
+		id := value[idTag].(string)
 		tc := HttpTestCase{
-			Desc:    "delete " + resource + "/" + resourceObj[idTag].(string),
+			Desc:    "delete " + resource + "/" + id,
 			Object:  ManagerApiExpect(),
 			Method:  http.MethodDelete,
-			Path:    "/apisix/admin/" + resource + "/" + resourceObj[idTag].(string),
+			Path:    "/apisix/admin/" + resource + "/" + id,
 			Headers: map[string]string{"Authorization": GetToken()},
 		}
 		RunTestCase(tc)

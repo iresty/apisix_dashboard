@@ -14,70 +14,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-version: "3.6"
+version: "3"
 
 services:
-  etcd1:
-    image: bitnami/etcd:3.5.2
+  etcd:
+    image: gcr.io/etcd-development/etcd:v3.4.20
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
-      - ETCD_DATA_DIR=/etcd-data
-      - ETCD_NAME=etcd1
-      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.16.238.10:2380
-      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
-      - ETCD_ADVERTISE_CLIENT_URLS=http://172.16.238.10:2379
       - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
-      - ETCD_INITIAL_CLUSTER=etcd1=http://172.16.238.10:2380,etcd2=http://172.16.238.11:2380,etcd3=http://172.16.238.12:2380
-      - ETCD_INITIAL_CLUSTER_STATE=new
-      - ETCD_INITIAL_CLUSTER_TOKEN=docker-etcd
+      - ETCD_ADVERTISE_CLIENT_URLS=http://172.16.238.10:2379
     ports:
       - "2379:2379"
     expose:
       - 2379
-      - 2380
     networks:
       apisix_dashboard_e2e:
         ipv4_address: 172.16.238.10
 
-  etcd2:
-    image: bitnami/etcd:3.5.2
-    environment:
-      - ALLOW_NONE_AUTHENTICATION=yes
-      - ETCD_DATA_DIR=/etcd-data
-      - ETCD_NAME=etcd2
-      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.16.238.11:2380
-      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
-      - ETCD_ADVERTISE_CLIENT_URLS=http://172.16.238.11:2379
-      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
-      - ETCD_INITIAL_CLUSTER=etcd1=http://172.16.238.10:2380,etcd2=http://172.16.238.11:2380,etcd3=http://172.16.238.12:2380
-      - ETCD_INITIAL_CLUSTER_STATE=new
-      - ETCD_INITIAL_CLUSTER_TOKEN=docker-etcd
-    expose:
-      - 2379
-      - 2380
+  apisix:
+    image: apache/apisix:2.99.0-debian
+    restart: always
+    volumes:
+      - ./apisix_config.yaml:/usr/local/apisix/conf/config.yaml:ro
+      - ../certs/apisix.crt:/usr/local/apisix/certs/apisix.crt:ro
+      - ../certs/apisix.key:/usr/local/apisix/certs/apisix.key:ro
+      - ./apisix_logs:/usr/local/apisix/logs
+    depends_on:
+      - etcd
+    ports:
+      - '9080:9080/tcp'
+      - '9090:9090/tcp'
+      - '9091:9091/tcp'
+      - '9443:9443/tcp'
+      - '9180:9180/tcp'
+      - '10090:10090/tcp'
+      - '10091:10091/tcp'
+      - '10092:10092/tcp'
+      - '10093:10093/tcp'
+      - '10095:10095/udp'
     networks:
       apisix_dashboard_e2e:
-        ipv4_address: 172.16.238.11
-
-  etcd3:
-    image: bitnami/etcd:3.5.2
-    environment:
-      - ALLOW_NONE_AUTHENTICATION=yes
-      - ETCD_DATA_DIR=/etcd-data
-      - ETCD_NAME=etcd3
-      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.16.238.12:2380
-      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
-      - ETCD_ADVERTISE_CLIENT_URLS=http://172.16.238.12:2379
-      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
-      - ETCD_INITIAL_CLUSTER=etcd1=http://172.16.238.10:2380,etcd2=http://172.16.238.11:2380,etcd3=http://172.16.238.12:2380
-      - ETCD_INITIAL_CLUSTER_STATE=new
-      - ETCD_INITIAL_CLUSTER_TOKEN=docker-etcd
-    expose:
-      - 2379
-      - 2380
-    networks:
-      apisix_dashboard_e2e:
-        ipv4_address: 172.16.238.12
+        ipv4_address: 172.16.238.20
 
   upstream:
     image: johz/upstream:v2.0
@@ -95,62 +72,7 @@ services:
       - '1992:1992/udp'
     networks:
       apisix_dashboard_e2e:
-        ipv4_address: 172.16.238.20
-
-  upstream_grpc:
-    image: grpc_server_example
-    restart: always
-    ports:
-      - '50051:50051'
-      - '50052:50052'
-    networks:
-      apisix_dashboard_e2e:
-        ipv4_address: 172.16.238.21
-
-  apisix:
-    hostname: apisix_server1
-    image: apache/apisix:2.10.2-alpine
-    restart: always
-    volumes:
-      - ./apisix_config.yaml:/usr/local/apisix/conf/config.yaml:ro
-      - ../certs/apisix.crt:/usr/local/apisix/certs/apisix.crt:ro
-      - ../certs/apisix.key:/usr/local/apisix/certs/apisix.key:ro
-      - ./apisix_logs:/usr/local/apisix/logs
-    depends_on:
-      - etcd1
-      - etcd2
-      - etcd3
-    ports:
-      - '9080:9080/tcp'
-      - '9090:9090/tcp'
-      - '9091:9091/tcp'
-      - '9443:9443/tcp'
-      - '10090:10090/tcp'
-      - '10091:10091/tcp'
-      - '10092:10092/tcp'
-      - '10093:10093/tcp'
-      - '10095:10095/udp'
-    networks:
-      apisix_dashboard_e2e:
         ipv4_address: 172.16.238.30
-
-  apisix2:
-    hostname: apisix_server2
-    image: apache/apisix:2.10.2-alpine
-    restart: always
-    volumes:
-      - ./apisix_config2.yaml:/usr/local/apisix/conf/config.yaml:ro
-      - ../certs/apisix.crt:/usr/local/apisix/certs/apisix.crt:ro
-      - ../certs/apisix.key:/usr/local/apisix/certs/apisix.key:ro
-    depends_on:
-      - etcd1
-      - etcd2
-      - etcd3
-    ports:
-      - '9081:9080/tcp'
-    networks:
-      apisix_dashboard_e2e:
-        ipv4_address: 172.16.238.31
 
   managerapi:
     build:
@@ -158,12 +80,10 @@ services:
       dockerfile: api/test/docker/Dockerfile
     restart: always
     volumes:
-      - ../../config/config.yaml:/go/manager-api/config/config.yaml:ro
+      - ../../config/config.yaml:/go/apisix-dashboard/config/config.yaml:ro
       - ../testdata:/go/manager-api/testdata
     depends_on:
-      - etcd1
-      - etcd2
-      - etcd3
+      - apisix
     ports:
       - '9000:9000/tcp'
     networks:

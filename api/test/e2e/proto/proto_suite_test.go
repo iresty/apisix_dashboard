@@ -32,9 +32,6 @@ func TestRoute(t *testing.T) {
 }
 
 var _ = ginkgo.AfterSuite(func() {
-	base.CleanResource("routes")
-	base.CleanResource("upstreams")
-	base.CleanResource("consumers")
-	base.CleanResource("proto")
+	//base.CleanResource("protos")
 	time.Sleep(base.SleepTime)
 })

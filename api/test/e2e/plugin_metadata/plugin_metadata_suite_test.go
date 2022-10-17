@@ -14,16 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package route_test
+package plugin_metadata_test
 
 import (
 	"testing"
+	"time"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/onsi/ginkgo"
+
+	"github.com/apache/apisix-dashboard/api/test/e2e/base"
 )
 
-func TestTrace(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Trace Suite")
+func TestPluginMetadata(t *testing.T) {
+	ginkgo.RunSpecs(t, "Plugin Metadata Suite")
 }
+
+var _ = ginkgo.AfterSuite(func() {
+	//base.CleanResource("plugin_metadata")
+	time.Sleep(base.SleepTime)
+})

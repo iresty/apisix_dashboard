@@ -51,9 +51,9 @@ type UserSession struct {
 // swagger:model LoginInput
 type LoginInput struct {
 	// username
-	Username string `form:"username" binding:"required"`
+	Username string `json:"username" binding:"required"`
 	// password
-	Password string `form:"password" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 // swagger:operation POST /apisix/admin/user/login userLogin
@@ -101,14 +101,14 @@ func (h *Handler) userLogin(_ *gin.Context, input interface{}) handler.Response 
 	if user == nil {
 		return handler.Response{
 			StatusCode: http.StatusUnauthorized,
-			Message:    consts.ErrUsernamePassword.Error(),
+			ErrMsg:     consts.ErrUsernamePassword.Error(),
 		}
 	}
 
 	if username != user.Username || password != user.Password {
 		return handler.Response{
 			StatusCode: http.StatusUnauthorized,
-			Message:    consts.ErrUsernamePassword.Error(),
+			ErrMsg:     consts.ErrUsernamePassword.Error(),
 		}
 	}
 

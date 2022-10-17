@@ -32,7 +32,7 @@ var _ = Describe("Login (Password)", func() {
 			Path:         "/apisix/admin/user/login",
 			Body:         `{"username": "admin","password": "admin"}`,
 			ExpectStatus: http.StatusOK,
-			ExpectBody:   `"code":0`,
+			ExpectBody:   `token`,
 		})
 	})
 

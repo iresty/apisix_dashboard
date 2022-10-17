@@ -38,26 +38,22 @@ jobs:
           yq -y '.data_source[0].apisix.address="http://172.16.238.20:9180/apisix/admin"' api/config/config.yaml | \
           yq -y '.security.allow_list[0]="0.0.0.0/0"' > api/config/config.yaml.tmp && mv api/config/config.yaml.tmp api/config/config.yaml
           cat api/config/config.yaml
-
       - name: Build docker images
         working-directory: ./api/test/docker
         run: |
           docker buildx bake --load -f docker-compose.yaml
-
       - name: Build grpc upstream
         working-directory: ./api/test/docker
         run: |
           wget https://github.com/api7/grpc_server_example/archive/refs/tags/20210819.tar.gz
           tar -xzvf 20210819.tar.gz && cd grpc_server_example-20210819
           docker build -t grpc_server_example:latest .
-
       - name: Start services
         working-directory: ./api/test/docker
         run: |
           docker-compose -f docker-compose-v3.yaml up -d
           sleep 5
           docker logs docker_managerapi_1
-
       - name: Install ginkgo cli
         run: go install github.com/onsi/ginkgo/ginkgo@v1.16.5
 
@@ -75,12 +71,10 @@ jobs:
         run: |
           docker-compose down
           sleep 10
-
       - name: Output test coverage
         working-directory: ./api/test/testdata
         run: |
           go tool cover -func=./integrationcover.out
-
       - name: Upload coverage profile
         working-directory: ./api/test/testdata
         run: |
