@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM golang:1.15 AS build-env
+FROM golang:1.16 AS build-env
 
 WORKDIR /go/src/github.com/apisix/manager-api
 

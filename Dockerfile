@@ -24,7 +24,7 @@ RUN set -x \
     && cd /usr/local/apisix-dashboard && git clean -Xdf \
     && rm -f ./.githash && git log --pretty=format:"%h" -1 > ./.githash
 
-FROM golang:1.15 as api-builder
+FROM golang:1.16 as api-builder
 
 ARG ENABLE_PROXY=false
 
