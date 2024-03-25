@@ -20,6 +20,10 @@ import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 
+const crypto = require("crypto");
+const crypto_orig_createHash = crypto.createHash;
+crypto.createHash = algorithm => crypto_orig_createHash(algorithm == "md4" ? "sha256" : algorithm);
+
 const { REACT_APP_ENV, SERVE_URL_DEV, SERVE_URL_TEST } = process.env;
 
 export default defineConfig({
