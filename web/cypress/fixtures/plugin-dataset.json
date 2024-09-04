@@ -1497,5 +1497,414 @@
         "method": "hello"
       }
     }
+  ],
+  "aws-lambda": [
+    {
+      "shouldValid": false,
+      "data": {
+        "authorization": {
+          "apikey": "<Generated API Key from aws console>"
+        },
+        "ssl_verify": false
+      }
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "function_uri": "https://x9w6z07gb9.execute-api.us-east-1.amazonaws.com/default/test-apisix",
+        "authorization": {
+          "apikey": "<Generated API Key from aws console>"
+        },
+        "ssl_verify": false
+      }
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "function_uri": "https://ajycz5e0v9.execute-api.us-east-1.amazonaws.com/default/test-apisix",
+        "authorization": {
+          "iam": {
+            "accesskey": "<access key>",
+            "secretkey": "<access key secret>"
+          }
+        },
+        "ssl_verify": false
+      }
+    }
+  ],
+  "azure-functions": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "function_uri": "http://test-apisix.azurewebsites.net/api/HttpTrigger",
+        "authorization": {
+          "apikey": "<Generated API Key from aws console>"
+        }
+      }
+    }
+  ],
+  "clickhouse-logger": [
+    {
+      "shouldValid": false,
+      "data": {
+        "user": "default",
+        "password": "a",
+        "logtable": "test",
+        "database": "default"
+      }
+    },
+    {
+      "shouldValid": false,
+      "data": {
+        "user": "default",
+        "password": "a",
+        "logtable": "test",
+        "endpoint_addr": "http://127.0.0.1:8123"
+      }
+    },
+    {
+      "shouldValid": false,
+      "data": {
+        "user": "default",
+        "password": "a",
+        "database": "default",
+        "endpoint_addr": "http://127.0.0.1:8123"
+      }
+    },
+    {
+      "shouldValid": false,
+      "data": {
+        "user": "default",
+        "database": "default",
+        "logtable": "test",
+        "endpoint_addr": "http://127.0.0.1:8123"
+      }
+    },
+    {
+      "shouldValid": false,
+      "data": {
+        "password": "a",
+        "database": "default",
+        "logtable": "test",
+        "endpoint_addr": "http://127.0.0.1:8123"
+      }
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "user": "default",
+        "password": "a",
+        "database": "default",
+        "logtable": "test",
+        "endpoint_addr": "http://127.0.0.1:8123"
+      }
+    }
+  ],
+  "csrf": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "name": "apisix-csrf-token",
+        "expires": 7200,
+        "key": "edd1c9f034335f136f87ad84b625c8f1"
+      }
+    }
+  ],
+  "datadog": [
+    {
+      "shouldValid": true,
+      "data": {}
+    }
+  ],
+  "file-logger": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "path": "logs/file.log"
+      }
+    }
+  ],
+  "forward-auth": [
+    {
+      "shouldValid": false,
+      "data": {
+        "request_headers": ["Authorization"],
+        "upstream_headers": ["X-User-ID"],
+        "client_headers": ["Location"]
+      }
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "uri": "http://127.0.0.1:9080/auth",
+        "request_headers": ["Authorization"],
+        "upstream_headers": ["X-User-ID"],
+        "client_headers": ["Location"]
+      }
+    }
+  ],
+  "google-cloud-logging": [
+    {
+      "shouldValid": false,
+      "data": {
+        "auth_config": {
+          "project_id": "apisix",
+          "private_key": "-----BEGIN RSA PRIVATE KEY-----your private key-----END RSA PRIVATE KEY-----"
+        }
+      }
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "auth_config": {
+          "project_id": "apisix",
+          "private_key": "-----BEGIN RSA PRIVATE KEY-----your private key-----END RSA PRIVATE KEY-----",
+          "token_uri": "https://oauth2.googleapis.com/token"
+        }
+      }
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "auth_config": {
+          "project_id": "apisix",
+          "private_key": "-----BEGIN RSA PRIVATE KEY-----your private key-----END RSA PRIVATE KEY-----",
+          "token_uri": "https://oauth2.googleapis.com/token",
+          "scopes": ["https://www.googleapis.com/auth/logging.admin"],
+          "entries_uri": "https://logging.googleapis.com/v2/entries:write"
+        },
+        "resource": {
+          "type": "global"
+        },
+        "log_id": "apisix.apache.org%2Flogs",
+        "inactive_timeout": 10,
+        "max_retry_count": 0,
+        "buffer_duration": 60,
+        "retry_delay": 1,
+        "batch_max_size": 1
+      }
+    }
+  ],
+  "grpc-web": [
+    {
+      "shouldValid": true,
+      "data": {}
+    }
+  ],
+  "ldap-auth": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": false,
+      "data": {
+        "user_dn": "cn=user01,ou=users,dc=example,dc=org"
+      }
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "base_dn": "ou=users,dc=example,dc=org",
+        "ldap_uri": "localhost:1389",
+        "uid": "cn"
+      }
+    }
+  ],
+  "loggly": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "customer_token": "0e6fe4bf-376e-40f4-b25f-1d55cb29f5a2"
+      }
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "customer_token": "0e6fe4bf-376e-40f4-b25f-1d55cb29f5a2",
+        "tags": ["apisix", "testroute"],
+        "severity": "info",
+        "severity_map": {
+          "503": "err",
+          "410": "alert"
+        },
+        "buffer_duration": 60,
+        "max_retry_count": 0,
+        "retry_delay": 1,
+        "inactive_timeout": 2,
+        "batch_max_size": 10
+      }
+    }
+  ],
+  "mocking": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "delay": 1,
+        "content_type": "application/json",
+        "response_status": 200,
+        "response_schema": {
+          "properties": {
+            "field0": {
+              "example": "abcd",
+              "type": "string"
+            },
+            "field1": {
+              "example": 123.12,
+              "type": "number"
+            },
+            "field3": {
+              "properties": {
+                "field3_1": {
+                  "type": "string"
+                },
+                "field3_2": {
+                  "properties": {
+                    "field3_2_1": {
+                      "example": true,
+                      "type": "boolean"
+                    },
+                    "field3_2_2": {
+                      "items": {
+                        "example": 155.55,
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "field2": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      }
+    }
+  ],
+  "opa": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "host": "http://127.0.0.1:8181",
+        "policy": "example1"
+      }
+    }
+  ],
+  "opentelemetry": [
+    {
+      "shouldValid": true,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "sampler": {
+          "name": "always_on"
+        }
+      }
+    }
+  ],
+  "proxy-control": [
+    {
+      "shouldValid": true,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "request_buffering": false
+      }
+    }
+  ],
+  "public-api": [
+    {
+      "shouldValid": true,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "uri": "/apisix/plugin/jwt/sign"
+      }
+    }
+  ],
+  "rocketmq-logger": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "nameserver_list": ["127.0.0.1:9876"],
+        "topic": "test2"
+      }
+    }
+  ],
+  "skywalking-logger": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "endpoint_addr": "http://127.0.0.1:12800"
+      }
+    }
+  ],
+  "splunk-hec-logging": [
+    {
+      "shouldValid": false,
+      "data": {}
+    },
+    {
+      "shouldValid": true,
+      "data": {
+        "endpoint": {
+          "uri": "http://127.0.0.1:8088/services/collector",
+          "token": "BD274822-96AA-4DA6-90EC-18940FB2414C",
+          "channel": "FE0ECFAD-13D5-401B-847D-77833BD77131",
+          "timeout": 60
+        },
+        "buffer_duration": 60,
+        "max_retry_count": 0,
+        "retry_delay": 1,
+        "inactive_timeout": 2,
+        "batch_max_size": 10
+      }
+    }
   ]
 }
