@@ -200,25 +200,6 @@ Return the service list according to the specified page number and page size, an
 | 0       | list response    | [ [service](#service) ] |
 | default | unexpected error | [ApiError](#ApiError)   |
 
-### /apisix/admin/export/routes/{ids}
-
-#### Summary
-
-Export specific or all routes as OpenAPI schema.
-
-##### Parameters
-
-| Name       | Located in | Description                                                                                                                                 | Required | Schema  |
-|------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------| -------- | ------- |
-| ids        | path       | To export specific routes, please provide the route IDs separated by commas. If you leave the ids field empty, all routes will be exported. | No       | integer |
-
-##### Responses
-
-| Code    | Description          | Schema                                                                                                |
-| ------- |----------------------|-------------------------------------------------------------------------------------------------------|
-| 0       | openapi json content | [ [OpenAPI schema](https://github.com/OAI/OpenAPI-Specification/blob/main/schemas/v3.0/schema.json) ] |
-| default | unexpected error     | [ApiError](#ApiError)                                                                                 |
-
 ### /apisix/admin/ssl
 
 #### GET

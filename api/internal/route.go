@@ -86,7 +86,6 @@ func SetUpRouter() *gin.Engine {
 		global_rule.NewHandler,
 		server_info.NewHandler,
 		label.NewHandler,
-		data_loader.NewHandler,
 		data_loader.NewImportHandler,
 		tool.NewHandler,
 		plugin_config.NewHandler,
