@@ -35,6 +35,7 @@ import (
 	"github.com/apisix/manager-api/internal/handler/healthz"
 	"github.com/apisix/manager-api/internal/handler/label"
 	"github.com/apisix/manager-api/internal/handler/migrate"
+	"github.com/apisix/manager-api/internal/handler/overview"
 	"github.com/apisix/manager-api/internal/handler/plugin_config"
 	"github.com/apisix/manager-api/internal/handler/proto"
 	"github.com/apisix/manager-api/internal/handler/route"
@@ -91,6 +92,7 @@ func SetUpRouter() *gin.Engine {
 		tool.NewHandler,
 		plugin_config.NewHandler,
 		migrate.NewHandler,
+		overview.NewHandler,
 		proto.NewHandler,
 		stream_route.NewHandler,
 		system_config.NewHandler,
