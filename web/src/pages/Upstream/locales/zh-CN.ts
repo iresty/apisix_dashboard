@@ -115,4 +115,10 @@ export default {
   'page.upstream.scheme': '协议',
 
   'page.upstream.other.configuration.invalid': '请检查上游配置',
+
+  'page.upstream.service-name.required': '请输入自定义服务名',
+  'page.upstream.step.service-name': '服务名称',
+  'page.upstream.step.service-name.pass': '保持与客户端请求的主机名一致',
+  'page.upstream.step.service-name.rewrite': '自定义服务名称',
+  'page.upstream.step.service-name.custom_name': '自定义服务名称',
 };

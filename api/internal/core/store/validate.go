@@ -174,6 +174,10 @@ func checkUpstream(upstream *entity.UpstreamDef) error {
 		}
 	}
 
+        if upstream.ServiceNameType == "rewrite" && upstream.ServiceName == "" {
+                return fmt.Errorf("`service_name` can't be empty when `service_name_type` is `rewrite`")
+        }
+
 	if upstream.PassHost == "rewrite" && upstream.UpstreamHost == "" {
 		return fmt.Errorf("`upstream_host` can't be empty when `pass_host` is `rewrite`")
 	}

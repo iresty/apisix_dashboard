@@ -119,4 +119,10 @@ export default {
   'page.upstream.scheme': 'Şema',
 
   'page.upstream.other.configuration.invalid': 'Lütfen upstream yapılandırmasını kontrol edin',
+
+  'page.upstream.service-name.required': 'Gelişmiş server gerekli',
+  'page.upstream.step.service-name': 'Server adı',
+  'page.upstream.step.service-name.pass': 'İstemci isteğinden gelen server adını bırak',
+  'page.upstream.step.service-name.rewrite': 'Gelişmiş Server',
+  'page.upstream.step.service-name.custom_name': 'Gelişmiş Server',
 };

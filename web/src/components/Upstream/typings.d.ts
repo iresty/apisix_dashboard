@@ -61,6 +61,7 @@ declare namespace UpstreamComponent {
     upstream_host?: string;
     name?: string;
     desc?: string;
+    service_name_type?: string;
     service_name?: string;
     id?: string;
     upstream_id?: string;

@@ -80,6 +80,7 @@ declare namespace UpstreamModule {
     type: Type;
     upstream_type: string;
     discovery_type?: DiscoveryType;
+    service_name_type?: 'pass' | 'rewrite';
     service_name?: string;
     discovery_args?: DiscoveryArgs;
     nodes?: UpstreamComponent.SubmitNode;

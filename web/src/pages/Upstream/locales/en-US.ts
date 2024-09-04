@@ -117,4 +117,11 @@ export default {
   'page.upstream.scheme': 'Scheme',
 
   'page.upstream.other.configuration.invalid': 'Please check the Upstream configuration',
+
+  'page.upstream.service-name.required': 'Please enter the custom server ame',
+  'page.upstream.step.service-name': 'Servername',
+  'page.upstream.step.service-name.pass': 'Keep the same as Host from client request',
+  'page.upstream.step.service-name.rewrite': 'Custom Server Name',
+  'page.upstream.step.service-name.custom_name': 'Custom Server Name',
+
 };

@@ -176,6 +176,7 @@ type UpstreamDef struct {
 	UpstreamHost  string                 `json:"upstream_host,omitempty"`
 	Name          string                 `json:"name,omitempty"`
 	Desc          string                 `json:"desc,omitempty"`
+        ServiceNameType   string                 `json:"service_name_type,omitempty"`
 	ServiceName   string                 `json:"service_name,omitempty"`
 	Labels        map[string]string      `json:"labels,omitempty"`
 	TLS           *UpstreamTLS           `json:"tls,omitempty"`
