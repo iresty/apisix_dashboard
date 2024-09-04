@@ -18,6 +18,7 @@ package utils
 
 import (
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -127,4 +128,11 @@ func TestValidateLuaCode(t *testing.T) {
 	err = ValidateLuaCode(invalidLuaCode)
 	assert.NotNil(t, err)
 	assert.Equal(t, "<string> at EOF:   syntax error\n", err.Error())
+}
+
+func TestPathExist(t *testing.T) {
+	workDir, _ := os.Getwd()
+	exist, err := PathExist(workDir)
+	assert.Nil(t, err)
+	assert.True(t, exist)
 }

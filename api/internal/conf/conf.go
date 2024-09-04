@@ -198,6 +198,11 @@ func setupConfig() {
 		viper.SetConfigFile(ConfigFile)
 	}
 
+	// setup env config search
+	viper.SetEnvPrefix("AD")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
+
 	// load config
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Sprintf("fail to read configuration, err: %s", err.Error()))

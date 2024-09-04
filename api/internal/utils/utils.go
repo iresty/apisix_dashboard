@@ -222,3 +222,14 @@ func ValueEqual(a interface{}, b interface{}) bool {
 	}
 	return bytes.Equal(aBytes, bBytes)
 }
+
+func PathExist(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
