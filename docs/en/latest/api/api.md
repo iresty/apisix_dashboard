@@ -91,21 +91,20 @@ verify SSL cert and key.
 
 ##### Summary
 
-Check whether the SSL exists.
+Check whether the SSL exists for all of the specified hosts.
 
 ##### Parameters
 
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| cert | body       | cert of SSL | Yes      | string |
-| key  | body       | key of SSL  | Yes      | string |
+| Name  | Located in | Description  | Required | Schema     |
+| ----- | ---------- | ------------ | -------- | ---------- |
+| hosts | body       | List of SNIs | Yes      | [ string ] |
 
 ##### Responses
 
-| Code    | Description      | Schema                |
-| ------- | ---------------- | --------------------- |
-| 0       | SSL exists       | [ApiError](#ApiError) |
-| default | unexpected error | [ApiError](#ApiError) |
+| Code    | Description                          | Schema                |
+| ------- | ------------------------------------ | --------------------- |
+| 0       | SSL certificate exists for all hosts | [ApiError](#ApiError) |
+| default | unexpected error                     | [ApiError](#ApiError) |
 
 ### /apisix/admin/consumers
 
