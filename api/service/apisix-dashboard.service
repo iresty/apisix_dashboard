@@ -4,5 +4,6 @@ Conflicts=apisix-dashboard.service
 After=network-online.target
 
 [Service]
+Type=forking
 WorkingDirectory=/usr/local/apisix-dashboard
 ExecStart=/usr/local/apisix-dashboard/manager-api -c /usr/local/apisix-dashboard/conf/conf.yaml

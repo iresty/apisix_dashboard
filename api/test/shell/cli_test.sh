@@ -100,6 +100,7 @@ stop_etcd() {
   cp ./manager-api /usr/local/apisix-dashboard
 
   # create systemd service
+  sed -i '7d' ./service/apisix-dashboard.service
   cp ./service/apisix-dashboard.service /usr/lib/systemd/system/${SERVICE_NAME}.service
   run systemctl daemon-reload
   [ "$status" -eq 0 ]
