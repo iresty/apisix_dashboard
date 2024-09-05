@@ -213,6 +213,19 @@ func uriContains(obj *entity.Route, uri string) bool {
 	return false
 }
 
+func hostContains(obj *entity.Route, host string) bool {
+       if strings.Contains(obj.Host, host) {
+               return true
+       }
+       for _, str := range obj.Hosts {
+               result := strings.Contains(str, host)
+               if result {
+                       return true
+               }
+       }
+       return false
+}
+
 func (h *Handler) List(c droplet.Context) (interface{}, error) {
 	input := c.Input().(*ListInput)
 	labelMap, err := utils.GenLabelMap(input.Label)
@@ -239,7 +252,7 @@ func (h *Handler) List(c droplet.Context) (interface{}, error) {
 				return false
 			}
 
-			if input.Host != "" && !strings.Contains(obj.(*entity.Route).Host, input.Host) {
+			if input.Host != "" && !hostContains(obj.(*entity.Route), input.Host) {
 				return false
 			}
 
