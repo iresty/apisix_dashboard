@@ -151,7 +151,10 @@ After=network-online.target
 
 [Service]
 WorkingDirectory=/usr/local/apisix-dashboard
-ExecStart=/usr/local/apisix-dashboard/manager-api -c /usr/local/apisix-dashboard/conf/conf.yaml" > /usr/lib/systemd/system/apisix-dashboard.service
+ExecStart=/usr/local/apisix-dashboard/manager-api -c /usr/local/apisix-dashboard/conf/conf.yaml
+
+[Install]
+WantedBy=multi-user.target" > /usr/lib/systemd/system/apisix-dashboard.service
 ```
 
 3. Manage service
