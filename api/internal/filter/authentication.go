@@ -38,7 +38,7 @@ func Authentication() gin.HandlerFunc {
 
 		cookie, _ := conf.CookieStore.Get(c.Request, "oidc")
 		errResp := gin.H{
-			"code":    010013,
+			"code":    10013,
 			"message": "request unauthorized",
 		}
 
