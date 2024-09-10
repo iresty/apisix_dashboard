@@ -51,7 +51,9 @@ Refer to [https://apisix.apache.org/docs/apisix/control-api#get-v1schema](https:
 
 3. Copy the exported `schema.json` to the `conf` directory in the Dashboard working directory (About working directory, please refer to https://github.com/apache/apisix-dashboard/blob/master/docs/en/latest/deploy.md#working-directory)
 
-4. Restart the Manager API
+4. For versions of the dashboard beyond `3.0.1` , ensure to add your plugin to the `'plugins'` attribute in the `conf.yaml` file located in the `conf` directory to enable it. Otherwise, the plugin will remain disabled in the dashboard and won't be displayed on the dashboard page.
+
+5. Restart the Manager API
 
 ### 5. How to write API documentation
 
