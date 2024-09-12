@@ -240,6 +240,9 @@ func (h *Handler) List(c droplet.Context) (interface{}, error) {
 			}
 
 			if input.Host != "" && !strings.Contains(obj.(*entity.Route).Host, input.Host) {
+				if strings.Contains(strings.Join(obj.(*entity.Route).Hosts, ""), input.Host) {
+					return true
+				}
 				return false
 			}
 

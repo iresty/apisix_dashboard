@@ -23,6 +23,8 @@ context('Create and Search Route', () => {
     name: '#name',
     description: '#desc',
     hosts_0: '#hosts_0',
+    hosts_1: '#hosts_1',
+    add_host: 'button[data-cy="addHost"]',
     uris_0: '#uris_0',
     labels_0_labelKey: '#labels_0_labelKey',
     labels_0_labelValue: '#labels_0_labelValue',
@@ -30,6 +32,7 @@ context('Create and Search Route', () => {
     nodes_0_port: '#submitNodes_0_port',
     nodes_0_weight: '#submitNodes_0_weight',
     nameSearchInput: '#name',
+    hostSearchInput: '#host',
     pathSearchInput: '#uri',
     labelSelect_0: '.ant-select-selection-overflow',
     dropdown: '.rc-virtual-list',
@@ -45,6 +48,7 @@ context('Create and Search Route', () => {
   const data = {
     host1: '11.11.11.11',
     host2: '12.12.12.12',
+    hostx: 'aa.com',
     port: '80',
     weight: 1,
     uris: '/get',
@@ -86,6 +90,11 @@ context('Create and Search Route', () => {
       cy.get(selector.name).type(`test${i}`);
       cy.get(selector.description).type(`desc${i}`);
       cy.get(selector.hosts_0).type(data.host1);
+      if (i == 2) {
+        cy.get(selector.add_host).click();
+        cy.get(selector.hosts_1).type(data.hostx);
+      }
+
       cy.get(selector.uris_0).clear().type(`/get${i}`);
 
       // config label
@@ -137,6 +146,30 @@ context('Create and Search Route', () => {
     cy.contains(data.test2).siblings().should('contain', data.desc2);
     // no match
     cy.get(selector.nameSearchInput).clear().type(data.testx);
+    cy.contains('Search').click();
+    cy.contains(data.test0).should('not.exist');
+    cy.contains(data.test1).should('not.exist');
+    cy.contains(data.test2).should('not.exist');
+  });
+
+  it('should search the route with host', function () {
+    cy.visit('/');
+    cy.contains('Route').click();
+    cy.wait(timeout);
+    // only one host
+    cy.get(selector.hostSearchInput).type(data.hostx);
+    cy.contains('Search').click();
+    cy.contains(data.test2).siblings().should('contain', data.hostx);
+    cy.contains(data.test0).should('not.exist');
+    cy.contains(data.test1).should('not.exist');
+    // search hosts
+    cy.get(selector.hostSearchInput).clear().type(data.host1);
+    cy.contains('Search').click();
+    cy.contains(data.test0).siblings().should('contain', data.desc0);
+    cy.contains(data.test1).siblings().should('contain', data.desc1);
+    cy.contains(data.test2).siblings().should('contain', data.desc2);
+    // no match host
+    cy.get(selector.hostSearchInput).clear().type(data.host2);
     cy.contains('Search').click();
     cy.contains(data.test0).should('not.exist');
     cy.contains(data.test1).should('not.exist');
