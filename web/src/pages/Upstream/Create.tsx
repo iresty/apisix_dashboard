@@ -58,6 +58,7 @@ const Page: React.FC = (props) => {
         notification.error({
           message: formatMessage({ id: 'page.upstream.other.configuration.invalid' }),
         });
+        setSubmitLoading(false);
         return;
       }
 
