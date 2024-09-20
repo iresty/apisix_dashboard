@@ -216,6 +216,11 @@ export const httplogger = `{
 }
 `;
 
+export const lokilogger = `{
+    "endpoint_addrs": []
+}
+`;
+
 export const kafkalogger = `{
     "broker_list" :
     "kafka_topic" :

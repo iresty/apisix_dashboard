@@ -142,6 +142,12 @@ export const httploggerModel = editor.createModel(
   Uri.parse('file:http-logger'),
 );
 
+export const lokiloggerModel = editor.createModel(
+  modelCode.lokilogger,
+  'json',
+  Uri.parse('file:loki-logger'),
+);
+
 export const kafkaloggerModel = editor.createModel(
   modelCode.kafkalogger,
   'json',

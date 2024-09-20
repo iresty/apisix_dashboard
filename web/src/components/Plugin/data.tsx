@@ -53,6 +53,7 @@ export const PLUGIN_ICON_LIST: Record<string, any> = {
   'udp-logger': <IconFont name="iconudp-logger" />,
   'error-log-logger': <IconFont name="iconerror-logger" />,
   'http-logger': <IconFont name="iconhttp-logger" />,
+  'loki-logger': <IconFont name="iconloki-logger" />,
   'request-id': <IconFont name="iconrequest-id" />,
   'sls-logger': <IconFont name="iconsls-logger" />,
   syslog: <IconFont name="iconsys-logger" />,
@@ -171,6 +172,9 @@ export const PLUGIN_LIST = {
     type: PluginType.authentication,
   },
   'http-logger': {
+    type: PluginType.observability,
+  },
+  'loki-logger': {
     type: PluginType.observability,
   },
   'ip-restriction': {
