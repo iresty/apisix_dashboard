@@ -30,7 +30,7 @@ const Component: React.FC<Props> = ({ readonly }) => {
       tooltip={formatMessage({ id: 'component.upstream.fields.retries.tooltip' })}
       name="retries"
     >
-      <InputNumber disabled={readonly} />
+      <InputNumber disabled={readonly} min={0} />
     </Form.Item>
   );
 };
