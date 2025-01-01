@@ -49,7 +49,7 @@ curl 127.0.0.1:9090/v1/schema > schema.json
 
 Refer to [https://apisix.apache.org/docs/apisix/control-api#get-v1schema](https://apisix.apache.org/docs/apisix/control-api#get-v1schema)
 
-3. Copy the exported `schema.json` to the `conf` directory in the Dashboard working directory (About working directory, please refer to https://github.com/apache/apisix-dashboard/blob/master/docs/en/latest/deploy.md#working-directory)
+3. Copy the exported `schema.json` to the `conf` directory in the Dashboard working directory (About working directory, please refer to https://github.com/apache/apisix-dashboard/blob/release/2.9.0/docs/en/latest/deploy.md#working-directory)
 
 4. Restart the Manager API
 
