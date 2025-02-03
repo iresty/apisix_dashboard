@@ -79,7 +79,7 @@
     "nzh": "1.0.4",
     "omit.js": "^2.0.2",
     "path-to-regexp": "2.4.0",
-    "qs": "^6.9.0",
+    "qs": "^6.10.3",
     "query-string": "^6.13.7",
     "react": "^16.8.6",
     "react-copy-to-clipboard": "^5.0.3",
